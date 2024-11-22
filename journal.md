@@ -1,3 +1,6 @@
-Cotrez;Jules;julescotrez@gmail.com;0623254204
+# 22/11/2024 Bernardi
 
-Shay;Ronen;ronenshay78@gmail.com;0782851194
+TODO
+[ ] Ecrire les types and interfaces des fonctions
+[ ] Ecrire des jalons / time-lines
+[ ] Implementer un prototype de UI en utilisant raylib (https://github.com/tjammer/raylib-ocaml)
