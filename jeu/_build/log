@@ -1,6 +1,23 @@
-# dune init project jeu
+# dune build
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/lebronen/.cache/dune/db
 # Workspace root: /home/lebronen/cortez-shay-plong-2024/jeu
 # Auto-detected concurrency: 4
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -config > /tmp/dune_651604_output
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamldep.opt -modules -impl lib/joueur.ml) > _build/default/lib/.jeu.objs/jeu__Joueur.impl.d
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/.jeu.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Jeu -o lib/.jeu.objs/byte/jeu__Joueur.cmo -c -impl lib/joueur.ml)
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/jeu.cma lib/.jeu.objs/byte/jeu.cmo lib/.jeu.objs/byte/jeu__Joueur.cmo)
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Jeu -o lib/.jeu.objs/native/jeu__Joueur.cmx -c -impl lib/joueur.ml)
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/jeu.cmxa lib/.jeu.objs/native/jeu.cmx lib/.jeu.objs/native/jeu__Joueur.cmx)
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib -o lib/jeu.cmxs lib/jeu.cmxa)
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o bin/main.exe lib/jeu.cmxa bin/.main.eobjs/native/dune__exe__Main.cmx)
