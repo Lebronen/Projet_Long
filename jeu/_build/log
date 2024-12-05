@@ -13,11 +13,101 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -config > /tmp/dune_651604_output
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamldep.opt -modules -impl lib/joueur.ml) > _build/default/lib/.jeu.objs/jeu__Joueur.impl.d
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/.jeu.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Jeu -o lib/.jeu.objs/byte/jeu__Joueur.cmo -c -impl lib/joueur.ml)
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/jeu.cma lib/.jeu.objs/byte/jeu.cmo lib/.jeu.objs/byte/jeu__Joueur.cmo)
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Jeu -o lib/.jeu.objs/native/jeu__Joueur.cmx -c -impl lib/joueur.ml)
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -a -o lib/jeu.cmxa lib/.jeu.objs/native/jeu.cmx lib/.jeu.objs/native/jeu__Joueur.cmx)
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -shared -linkall -I lib -o lib/jeu.cmxs lib/jeu.cmxa)
-$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o bin/main.exe lib/jeu.cmxa bin/.main.eobjs/native/dune__exe__Main.cmx)
+$ /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -config > /tmp/dune_8d836c_output
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamldep.opt -modules -impl lib/ennemi.ml) > _build/default/lib/.jeu.objs/jeu__Ennemi.impl.d
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/.jeu.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/byte/jeu__Joueur.cmo -c -impl lib/joueur.ml)
+> File "lib/joueur.ml", line 1:
+> Error: The implementation lib/joueur.ml
+>        does not match the interface lib/joueur.ml: 
+>        The value deplacer is required but not provided
+>        File "lib/joueur.mli", line 23, characters 0-46: Expected declaration
+>        The value drawme is required but not provided
+>        File "lib/joueur.mli", line 25, characters 0-27: Expected declaration
+>        The value create_personnage is required but not provided
+>        File "lib/joueur.mli", line 27, characters 0-50: Expected declaration
+>        The value use_jetpack is required but not provided
+>        File "lib/joueur.mli", line 29, characters 0-49: Expected declaration
+>        The value use_grappin is required but not provided
+>        File "lib/joueur.mli", line 31, characters 0-49: Expected declaration
+>        The value attack is required but not provided
+>        File "lib/joueur.mli", line 33, characters 0-29: Expected declaration
+[2]
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/native/jeu__Joueur.cmx -c -impl lib/joueur.ml)
+> File "lib/joueur.ml", line 1:
+> Error: The implementation lib/joueur.ml
+>        does not match the interface lib/joueur.ml: 
+>        The value deplacer is required but not provided
+>        File "lib/joueur.mli", line 23, characters 0-46: Expected declaration
+>        The value drawme is required but not provided
+>        File "lib/joueur.mli", line 25, characters 0-27: Expected declaration
+>        The value create_personnage is required but not provided
+>        File "lib/joueur.mli", line 27, characters 0-50: Expected declaration
+>        The value use_jetpack is required but not provided
+>        File "lib/joueur.mli", line 29, characters 0-49: Expected declaration
+>        The value use_grappin is required but not provided
+>        File "lib/joueur.mli", line 31, characters 0-49: Expected declaration
+>        The value attack is required but not provided
+>        File "lib/joueur.mli", line 33, characters 0-29: Expected declaration
+[2]
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/native/jeu.cmx -c -impl lib/jeu.ml)
+> File "lib/jeu.ml", line 1:
+> Error: The implementation lib/jeu.ml does not match the interface lib/jeu.ml:
+>         The type settings is required but not provided
+>        File "lib/jeu.mli", line 4, characters 0-13: Expected declaration
+>        The value gameloop is required but not provided
+>        File "lib/jeu.mli", line 6, characters 0-44: Expected declaration
+>        The value draw is required but not provided
+>        File "lib/jeu.mli", line 8, characters 0-40: Expected declaration
+>        The value init is required but not provided
+>        File "lib/jeu.mli", line 10, characters 0-79: Expected declaration
+>        The value startscreen is required but not provided
+>        File "lib/jeu.mli", line 12, characters 0-33: Expected declaration
+>        The value menu is required but not provided
+>        File "lib/jeu.mli", line 14, characters 0-25: Expected declaration
+>        The value setup is required but not provided
+>        File "lib/jeu.mli", line 16, characters 0-32: Expected declaration
+[2]
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/.jeu.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/byte/jeu.cmo -c -impl lib/jeu.ml)
+> File "lib/jeu.ml", line 1:
+> Error: The implementation lib/jeu.ml does not match the interface lib/jeu.ml:
+>         The type settings is required but not provided
+>        File "lib/jeu.mli", line 4, characters 0-13: Expected declaration
+>        The value gameloop is required but not provided
+>        File "lib/jeu.mli", line 6, characters 0-44: Expected declaration
+>        The value draw is required but not provided
+>        File "lib/jeu.mli", line 8, characters 0-40: Expected declaration
+>        The value init is required but not provided
+>        File "lib/jeu.mli", line 10, characters 0-79: Expected declaration
+>        The value startscreen is required but not provided
+>        File "lib/jeu.mli", line 12, characters 0-33: Expected declaration
+>        The value menu is required but not provided
+>        File "lib/jeu.mli", line 14, characters 0-25: Expected declaration
+>        The value setup is required but not provided
+>        File "lib/jeu.mli", line 16, characters 0-32: Expected declaration
+[2]
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -bin-annot-occurrences -I lib/.jeu.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/byte/jeu__Ennemi.cmo -c -impl lib/ennemi.ml)
+> File "lib/ennemi.ml", line 1:
+> Error: The implementation lib/ennemi.ml
+>        does not match the interface lib/ennemi.ml: 
+>        The value deplacer is required but not provided
+>        File "lib/ennemi.mli", line 19, characters 0-46: Expected declaration
+>        The value drawme is required but not provided
+>        File "lib/ennemi.mli", line 21, characters 0-27: Expected declaration
+>        The value create_personnage is required but not provided
+>        File "lib/ennemi.mli", line 23, characters 0-50: Expected declaration
+>        The value attack is required but not provided
+>        File "lib/ennemi.mli", line 25, characters 0-29: Expected declaration
+[2]
+$ (cd _build/default && /home/lebronen/.opam/ocaml-5/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/native/jeu__Ennemi.cmx -c -impl lib/ennemi.ml)
+> File "lib/ennemi.ml", line 1:
+> Error: The implementation lib/ennemi.ml
+>        does not match the interface lib/ennemi.ml: 
+>        The value deplacer is required but not provided
+>        File "lib/ennemi.mli", line 19, characters 0-46: Expected declaration
+>        The value drawme is required but not provided
+>        File "lib/ennemi.mli", line 21, characters 0-27: Expected declaration
+>        The value create_personnage is required but not provided
+>        File "lib/ennemi.mli", line 23, characters 0-50: Expected declaration
+>        The value attack is required but not provided
+>        File "lib/ennemi.mli", line 25, characters 0-29: Expected declaration
+[2]

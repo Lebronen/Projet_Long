@@ -8,13 +8,10 @@ type position = int *int
 
 type hitbox = position * position * position * position
 
-  type joueur = {
+type ennemi = {
     nom : string;
-    pos : position;
     health_point : int;
     attack_point : int;
-    jetpack_carburant_pourcentage : int;
-    has_grappin : bool;
+    pos : position;
     sprite_img_name : string
-
 }

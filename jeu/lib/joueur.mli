@@ -19,7 +19,6 @@ type joueur = {
 
 }
 
-type ennemi
 
 val deplacer : joueur -> deplacement -> joueur
 
