@@ -1,0 +1,6 @@
+# dune init project jeu
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /home/lebronen/.cache/dune/db
+# Workspace root: /home/lebronen/cortez-shay-plong-2024/jeu
+# Auto-detected concurrency: 4

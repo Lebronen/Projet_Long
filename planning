@@ -1,7 +1,31 @@
 06/12/2024 :
 
--faire le planning
--écrire les types et interfaces des fonctions
--Implémenter un prototype de UI en utilisant raylib
+- Faire le planning
+- Ecrire les types et interfaces des fonctions
+- Implémenter un prototype de UI en utilisant raylib
 
 
+20/12/2024 :
+
+- Implémenter les fonctions du joueur
+- Affichage simple du sprite
+- Déplacements
+
+22/01/2025 :
+
+- Créer la map (environnement)
+- collisions
+- Créer un premier niveau simple
+- Décider si on fera des enchaînements de niveaux ou un grand niveau avec défilement de caméra
+
+12/02/2025 :
+
+- Rajouter les ennemis
+- Avoir crée soit plusieurs niveaux soit agrandi le niveau principal
+
+- Commencer à rédiger le rapport
+
+05/03/2025 :
+
+- rajouter les éléments de gameplay (grappin, jetpack, armes, ...)
+- implémenter les combats

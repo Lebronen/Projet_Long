@@ -1,0 +1,4 @@
+(executable
+ (public_name jeu)
+ (name main)
+ (libraries jeu))
