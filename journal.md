@@ -13,4 +13,5 @@ TODO
 [ ] Réfléchir à la physique du grapin, pour que ce soit techniquement intéressant (essentiellement, coder un grappin nécessite de comprendre un minimum la physique du pendule) et mettre à jour le .mli en conséquence
 [ ] Rajouter dans les .mli les types correspondant aux maps
 [ ] Réfléchir à la génération de cartes (procéduralement ?)
+[ ] Chercher comment faire du réseau (pour le multijoueur) en OCaml
 [ ] Plus tard, avoir des hitbox moins triviales
