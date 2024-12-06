@@ -1,6 +1,16 @@
 # 22/11/2024 Bernardi
 
 TODO
-[ ] Ecrire les types and interfaces des fonctions
-[ ] Ecrire des jalons / time-lines
-[ ] Implementer un prototype de UI en utilisant raylib (https://github.com/tjammer/raylib-ocaml)
+[X] Ecrire les types and interfaces des fonctions
+[X] Ecrire des jalons / time-lines
+[X] Implementer un prototype de UI en utilisant raylib (https://github.com/tjammer/raylib-ocaml)
+
+# 06/12/2024 Aubian
+
+TODO
+[ ] Détailler le projet dans le README (essentiellement : c'est quoi un MetroidVania ?)
+[ ] Factoriser vos .mli (+ nettoyer)
+[ ] Réfléchir à la physique du grapin, pour que ce soit techniquement intéressant (essentiellement, coder un grappin nécessite de comprendre un minimum la physique du pendule) et mettre à jour le .mli en conséquence
+[ ] Rajouter dans les .mli les types correspondant aux maps
+[ ] Réfléchir à la génération de cartes (procéduralement ?)
+[ ] Plus tard, avoir des hitbox moins triviales
