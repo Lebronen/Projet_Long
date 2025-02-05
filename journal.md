@@ -16,12 +16,12 @@ TODO
 [ ] Chercher comment faire du réseau (pour le multijoueur) en OCaml
 [ ] Plus tard, avoir des hitbox moins triviales
 
-# 05/02/2024
+# 05/02/2024 Bernardi
 
 TODO
 
 [ ] Créer un projet dune et organiser les fichiers par consequence
-[ ] Dettailer dans le fichier `README.md` quelle commandes
+[ ] Dettailer dans le fichier `README.md` quelle commande
 	- compile le code
 	- execute le jeu
 [ ] Prototype des deplacements du joueur
