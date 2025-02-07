@@ -22,12 +22,13 @@ type joueur = {
 
 val deplacer : joueur -> deplacement -> joueur
 
-val drawme : joueur -> unit
+(*val drawme : joueur -> unit*)
 
 val create_personnage : string -> string -> joueur
 
-val use_jetpack : joueur -> deplacement -> joueur
+(*val use_jetpack : joueur -> deplacement -> joueur
 
 val use_grappin : joueur -> deplacement -> joueur
 
 val attack : joueur -> hitbox
+*)

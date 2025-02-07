@@ -1,3 +1,4 @@
 (library
  (name jeu)
- (modules joueur ennemi jeu))
+ (modules joueur ennemi jeu)
+ (libraries raylib))
