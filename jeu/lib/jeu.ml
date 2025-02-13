@@ -1,11 +1,15 @@
+open Joueur
 
-  type settings
+let eren = create_personnage "eren" "../resources/eren.gif"
+
+type settings
   let setup () =
     Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
     Raylib.set_target_fps 60;
+
+    let sprite_texture = drawme eren in
     let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
     let game_texture = Raylib.load_texture "nouvelle-image.png" in
-    let sprite_texture = Raylib.load_texture "../resources/eren.gif" in
     (menu_texture, game_texture, sprite_texture)
   
   let start_time = ref (Raylib.get_time ())
@@ -31,6 +35,7 @@
   let platform_width = 200
   let platform_height = 20
   
+
   let rec loop menu_texture game_texture sprite_texture =
     if Raylib.window_should_close () then (
       Raylib.unload_texture menu_texture;
@@ -137,7 +142,7 @@
       end_drawing ();
       loop menu_texture game_texture sprite_texture
   
-  let gameloop =
+  let gameloop=
     let menu_texture, game_texture, sprite_texture = setup () in
     loop menu_texture game_texture sprite_texture
   

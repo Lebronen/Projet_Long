@@ -6,11 +6,12 @@ type deplacement =
 
 type position = int *int
 
-type hitbox = position * position * position * position
+type hitboxrectangle = position * position * position * position
 
   type joueur = {
     nom : string;
     pos : position;
+    vector_velocity : int * int;
     health_point : int;
     attack_point : int;
     jetpack_carburant_pourcentage : int;
@@ -22,6 +23,7 @@ type hitbox = position * position * position * position
 let create_personnage nom img = 
   {nom = nom;
   pos = (0, 650);
+  vector_velocity = (0,0);
   health_point = 100;
   attack_point = 10;
   jetpack_carburant_pourcentage = 0;
@@ -29,7 +31,9 @@ let create_personnage nom img =
   sprite_img_name = img}
 ;;
 
-let deplacer player dp = 
+let drawme player = Raylib.load_texture player.sprite_img_name
+
+(* let deplacer player dp = 
   let (x, y) = player.pos in
   let new_pos = match dp with
     |HAUT -> (x, y - 5)
@@ -45,4 +49,18 @@ let deplacer player dp =
   has_grappin = player.has_grappin;
   sprite_img_name = player.sprite_img_name
   }
-;;
+;; *)
+
+let deplacer player v =
+  let (x, y) = player.pos in
+  let new_pos = (x + fst v , y + snd v)
+  in
+  {nom = player.nom;
+  pos = new_pos;
+  vector_velocity = player.vector_velocity;
+  health_point = player.health_point;
+  attack_point = player.attack_point;
+  jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
+  has_grappin = player.has_grappin;
+  sprite_img_name = player.sprite_img_name
+  }
