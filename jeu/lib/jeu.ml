@@ -1,46 +1,48 @@
 open Joueur
 
-let eren = create_personnage "eren" "../resources/eren.gif"
 
-type settings
+type settings = {
+  starttime : float;
+  isstartvisible : bool;
+  is_game_running : bool;
+}
+type plateforme = {
+  platform_x : float;
+  platform_y : float;
+  platform_width : float;
+  platform_height : float
+}
+
+type entities = {
+player : joueur;
+plateforme_list : plateforme list
+}
+
   let setup () =
     Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
     Raylib.set_target_fps 60;
 
-    let sprite_texture = drawme eren in
     let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
     let game_texture = Raylib.load_texture "nouvelle-image.png" in
-    (menu_texture, game_texture, sprite_texture)
+    (menu_texture, game_texture)
   
   let start_time = ref (Raylib.get_time ())
   let is_start_visible = ref true
   let is_game_running = ref false
   
-  (* Position et physique du sprite *)
-  let sprite_position = ref (Raylib.Vector2.create 50. (650.0 -. 92.0))
-  let velocity_y = ref 0.
-  let is_jumping = ref false
-  let falling_through_platform = ref false  (* Permet de tomber de la plateforme *)
-  
   (* Dimensions *)
   let screen_width = 1200
   let screen_height = 650
-  let sprite_width = 135
+  let sprite_width = 50
   let sprite_height = 92
-  let facing_right = ref true
   
-  (* Plateforme *)
-  let platform_x = 300
-  let platform_y = 500
-  let platform_width = 200
-  let platform_height = 20
   
-
-  let rec loop menu_texture game_texture sprite_texture =
+  
+  let rec loop menu_texture game_texture sprite_texture entities settings =
     if Raylib.window_should_close () then (
       Raylib.unload_texture menu_texture;
       Raylib.unload_texture game_texture;
-      Raylib.unload_texture sprite_texture;
+      Raylib.unload_texture entities.player.sprite;
       Raylib.close_window ()
     )
     else
@@ -65,12 +67,13 @@ type settings
   
       (* Mise à jour du jeu *)
       if !is_game_running then begin
-        let new_x =
-          if is_key_down Key.Right then (facing_right := true; min (Vector2.x !sprite_position +. 5.) (float_of_int (screen_width - sprite_width)))
-          else if is_key_down Key.Left then (facing_right := false; max (Vector2.x !sprite_position -. 5.) 0.)
-          else Vector2.x !sprite_position
+        let player =
+          if is_key_down Key.Right then if player.is_moving_right then player else vel (moving_right player true) (5.,0)
+          else if is_key_down Key.Left then if player.is_moving_left then player else vel (moving_left player true) (-5.,0)
+          else player
         in
   
+        (*
         (* Permet de tomber de la plateforme en appuyant sur la flèche du bas *)
         if is_key_pressed Key.Down &&
            Vector2.y !sprite_position +. float_of_int sprite_height = float_of_int platform_y &&
@@ -80,11 +83,11 @@ type settings
           is_jumping := true;
           velocity_y := 5.;  (* Donne une petite impulsion vers le bas *)
         end;
-  
-        if is_key_pressed Key.Up && not !is_jumping then begin
-          is_jumping := true;
-          velocity_y := -15.
-        end;
+        *)
+      let player =
+        if is_key_pressed Key.Up && not !is_jumping then vel player (0., -15)
+        else player
+      in
   
         (* Gestion du saut et de la gravité *)
         let new_y = Vector2.y !sprite_position +. !velocity_y in
@@ -113,7 +116,7 @@ type settings
   
         (* Mise à jour de la position *)
         sprite_position := Vector2.create new_x new_y;
-      end;
+      end; 
   
       (* Dessin *)
       begin_drawing ();
