@@ -1,1 +1,1 @@
-lib/jeu.mli: Ennemi Joueur
+lib/jeu.mli:

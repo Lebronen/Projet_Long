@@ -15,7 +15,7 @@ type ennemi = {
     pos : position;
     sprite_img_name : string
 }
-
+(*
 val deplacer : ennemi -> deplacement -> ennemi
 
 val drawme : ennemi -> unit
@@ -23,3 +23,4 @@ val drawme : ennemi -> unit
 val create_personnage : string -> string -> ennemi
 
 val attack : ennemi -> hitbox
+*)
