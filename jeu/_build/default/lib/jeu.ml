@@ -1,41 +1,48 @@
+open Joueur
 
-  type settings
+
+type settings = {
+  starttime : float;
+  isstartvisible : bool;
+  is_game_running : bool;
+}
+type plateforme = {
+  platform_x : float;
+  platform_y : float;
+  platform_width : float;
+  platform_height : float
+}
+
+type entities = {
+player : joueur;
+plateforme_list : plateforme list
+}
+
   let setup () =
     Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
     Raylib.set_target_fps 60;
+
     let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
     let game_texture = Raylib.load_texture "nouvelle-image.png" in
-    let sprite_texture = Raylib.load_texture "../resources/eren.gif" in
-    (menu_texture, game_texture, sprite_texture)
+    (menu_texture, game_texture)
   
   let start_time = ref (Raylib.get_time ())
   let is_start_visible = ref true
   let is_game_running = ref false
   
-  (* Position et physique du sprite *)
-  let sprite_position = ref (Raylib.Vector2.create 50. (650.0 -. 92.0))
-  let velocity_y = ref 0.
-  let is_jumping = ref false
-  let falling_through_platform = ref false  (* Permet de tomber de la plateforme *)
-  
   (* Dimensions *)
   let screen_width = 1200
   let screen_height = 650
-  let sprite_width = 135
+  let sprite_width = 50
   let sprite_height = 92
-  let facing_right = ref true
   
-  (* Plateforme *)
-  let platform_x = 300
-  let platform_y = 500
-  let platform_width = 200
-  let platform_height = 20
   
-  let rec loop menu_texture game_texture sprite_texture =
+  
+  let rec loop menu_texture game_texture sprite_texture entities settings =
     if Raylib.window_should_close () then (
       Raylib.unload_texture menu_texture;
       Raylib.unload_texture game_texture;
-      Raylib.unload_texture sprite_texture;
+      Raylib.unload_texture entities.player.sprite;
       Raylib.close_window ()
     )
     else
@@ -108,7 +115,7 @@
   
         (* Mise à jour de la position *)
         sprite_position := Vector2.create new_x new_y;
-      end;
+      end; 
   
       (* Dessin *)
       begin_drawing ();
@@ -137,7 +144,7 @@
       end_drawing ();
       loop menu_texture game_texture sprite_texture
   
-  let gameloop =
+  let gameloop=
     let menu_texture, game_texture, sprite_texture = setup () in
     loop menu_texture game_texture sprite_texture
   

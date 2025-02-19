@@ -1,9 +1,9 @@
-# dune exec jeu
+# dune build
 # OCAMLPARAM: unset
 # Shared cache: disabled
-# Shared cache location: /home/lebronen/.cache/dune/db
-# Workspace root: /home/lebronen/cotrez-shay-plong-2024/jeu
-# Auto-detected concurrency: 4
+# Shared cache location: /home/julo/.cache/dune/db
+# Workspace root: /home/julo/Documents/M1/Projetlong/cotrez-shay-plong-2024/jeu
+# Auto-detected concurrency: 8
 # Dune context:
 #  { name = "default"
 #  ; kind = "default"
@@ -13,4 +13,21 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /home/lebronen/.opam/ocaml-5/bin/ocamlc.opt -config > /tmp/dune_f709ec_output
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_b66c77_output
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl lib/joueur.ml) > _build/default/lib/.jeu.objs/jeu__Joueur.impl.d
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -I /home/julo/_opam/lib/bigarray-compat -I /home/julo/_opam/lib/ctypes -I /home/julo/_opam/lib/ctypes/stubs -I /home/julo/_opam/lib/integers -I /home/julo/_opam/lib/raylib -I /home/julo/_opam/lib/raylib/__private__/raylib_c -I /home/julo/_opam/lib/raylib/__private__/raylib_fixed_types -I /home/julo/_opam/lib/raylib/__private__/raylib_functions -I /home/julo/_opam/lib/raylib/__private__/raylib_math -I /home/julo/_opam/lib/raylib/__private__/raylib_rlgl -I /home/julo/_opam/lib/raylib/__private__/raylib_types -I /home/julo/_opam/lib/raylib/__private__/rlgl_generated_types -I /home/julo/_opam/lib/raylib/__private__/rlgl_types -I /home/julo/_opam/lib/stdlib-shims -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/native/jeu.cmx -c -impl lib/jeu.ml)
+> File "lib/jeu.ml", line 71, characters 41-53:
+> 71 |           if is_key_down Key.Right then (facing_right := true; min (Vector2.x !sprite_position +. 5.) (float_of_int (screen_width - sprite_width)))
+>                                               ^^^^^^^^^^^^
+> Error: Unbound value facing_right
+> Hint: Did you mean moving_right?
+[2]
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lib/.jeu.objs/byte -I /home/julo/_opam/lib/bigarray-compat -I /home/julo/_opam/lib/ctypes -I /home/julo/_opam/lib/ctypes/stubs -I /home/julo/_opam/lib/integers -I /home/julo/_opam/lib/raylib -I /home/julo/_opam/lib/stdlib-shims -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/byte/jeu.cmo -c -impl lib/jeu.ml)
+> File "lib/jeu.ml", line 71, characters 41-53:
+> 71 |           if is_key_down Key.Right then (facing_right := true; min (Vector2.x !sprite_position +. 5.) (float_of_int (screen_width - sprite_width)))
+>                                               ^^^^^^^^^^^^
+> Error: Unbound value facing_right
+> Hint: Did you mean moving_right?
+[2]
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lib/.jeu.objs/byte -I /home/julo/_opam/lib/bigarray-compat -I /home/julo/_opam/lib/ctypes -I /home/julo/_opam/lib/ctypes/stubs -I /home/julo/_opam/lib/integers -I /home/julo/_opam/lib/raylib -I /home/julo/_opam/lib/stdlib-shims -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/byte/jeu__Joueur.cmo -c -impl lib/joueur.ml)
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.jeu.objs/byte -I lib/.jeu.objs/native -I /home/julo/_opam/lib/bigarray-compat -I /home/julo/_opam/lib/ctypes -I /home/julo/_opam/lib/ctypes/stubs -I /home/julo/_opam/lib/integers -I /home/julo/_opam/lib/raylib -I /home/julo/_opam/lib/raylib/__private__/raylib_c -I /home/julo/_opam/lib/raylib/__private__/raylib_fixed_types -I /home/julo/_opam/lib/raylib/__private__/raylib_functions -I /home/julo/_opam/lib/raylib/__private__/raylib_math -I /home/julo/_opam/lib/raylib/__private__/raylib_rlgl -I /home/julo/_opam/lib/raylib/__private__/raylib_types -I /home/julo/_opam/lib/raylib/__private__/rlgl_generated_types -I /home/julo/_opam/lib/raylib/__private__/rlgl_types -I /home/julo/_opam/lib/stdlib-shims -intf-suffix .ml -no-alias-deps -opaque -open Jeu__ -o lib/.jeu.objs/native/jeu__Joueur.cmx -c -impl lib/joueur.ml)

@@ -1,1 +1,1 @@
-lib/jeu.ml: Color Key MouseButton Raylib Rectangle Vector2
+lib/jeu.ml: Color Joueur Key MouseButton Raylib Rectangle Vector2

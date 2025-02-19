@@ -4,25 +4,35 @@ type deplacement =
   | GAUCHE
   | DROITE
 
-type position = int *int
+type position = float * float
 
-type hitbox = position * position * position * position
+type hitboxrectangle = position * position * position * position
 
 type joueur = {
     nom : string;
     pos : position;
+    vector_velocity : float *float;
+    is_moving_right : bool;
+    is_moving_left : bool;
     health_point : int;
     attack_point : int;
     jetpack_carburant_pourcentage : int;
     has_grappin : bool;
-    sprite_img_name : string
-
+    sprite : Raylib.Texture.t;
+    facing_right : bool;
+    is_jumping : bool
 }
 
 
-val deplacer : joueur -> deplacement -> joueur
+val deplacer : joueur -> joueur
 
-(*val drawme : joueur -> unit*)
+val vel : joueur -> float * float -> joueur
+
+val moving_right : joueur -> bool -> joueur
+
+val moving_left : joueur -> bool -> joueur
+
+(* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
 
 val create_personnage : string -> string -> joueur
 
