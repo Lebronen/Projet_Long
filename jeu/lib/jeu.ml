@@ -106,7 +106,6 @@ plateforme_list : plateforme list
       end;
   *)
       (* Dessin *)
-
       let draw_game player = 
 (
       begin_drawing ();
