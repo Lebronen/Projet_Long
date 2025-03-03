@@ -68,6 +68,7 @@ plateforme_list : plateforme list
             is_game_running := true
       end;
   
+      let player = 
       (* Mise à jour du jeu *)
       if !is_game_running then
         let player =
@@ -77,18 +78,18 @@ plateforme_list : plateforme list
         else if is_key_released Key.Left then vel (moving_left player false) (5., 0.)
           else player
         in
-      let player =
+        let player =
         if is_key_pressed Key.Up && not player.is_jumping then vel player (0., -15.)
         else player
-      in
+        in
   
         let player = if player.is_jumping then vel player (0., 5.)
         else player
-    in  
+        in  
         (* Vérifier si le sprite touche le sol *)
         (* if new_y >= float_of_int screen_height -. player.sprite_height then begin *)
-         let player = vel player (0., -.(snd player.vector_velocity))
-         in
+         let player = vel player (0., -.(snd player.vector_velocity)) in player
+      else player in
         (* Vérifier s'il atterrit sur la plateforme (seulement s'il ne veut pas traverser) *)
         (* else if !velocity_y > 0. && not !falling_through_platform &&
                 new_y +. float_of_int sprite_height >= float_of_int platform_y &&
@@ -103,13 +104,13 @@ plateforme_list : plateforme list
         else if new_y > float_of_int (platform_y + platform_height) then  
         (* Mise à jour de la position *)
         sprite_position := Vector2.create new_x new_y;
-      end;
-  *)
-      (* Dessin *)
-      let draw_game player = 
+        end;
+        *)
+        (* Dessin *)
+        let draw_game player = 
 (
-      begin_drawing ();
-      clear_background Color.raywhite;
+        begin_drawing ();
+        clear_background Color.raywhite;
   
       if !is_game_running then begin
         let source_rect = Rectangle.create 0. 0. (if player.facing_right then float_of_int sprite_width else -. (float_of_int sprite_width)) (float_of_int sprite_height) in
