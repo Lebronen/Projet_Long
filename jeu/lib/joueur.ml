@@ -102,7 +102,7 @@ let vel player v =
   is_jumping = player.is_jumping
   }
 
-  let moving_right player move_right =
+  (* let moving_right player move_right =
     {nom = player.nom;
     pos = player.pos;
     vector_velocity = player.vector_velocity;
@@ -117,9 +117,9 @@ let vel player v =
     sprite_width = player.sprite_width;
     facing_right = true;
     is_jumping = player.is_jumping
-    }
+    } *)
 
-    let moving_left player move_left=
+     (* let moving_left player move_left=
       {nom = player.nom;
       pos = player.pos;
       vector_velocity = player.vector_velocity;
@@ -134,7 +134,27 @@ let vel player v =
       sprite_width = player.sprite_width;
       facing_right = false;
       is_jumping = player.is_jumping
+      } *)
+
+    let moving_right player move_right =
+      { player with 
+        is_moving_right = move_right;
+        facing_right = true
       }
+
+    let moving_left player move_left =
+      { player with 
+        is_moving_left = move_left;
+        facing_right = false
+      }
+
+      (* let jumpb player b =
+        { player with 
+        is_jumping = b;
+        }
+   *)
+
+   
 
   (*
   let modify_player player p v h a j g =
