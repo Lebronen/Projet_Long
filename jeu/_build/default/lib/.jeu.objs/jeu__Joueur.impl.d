@@ -1,1 +1,1 @@
-lib/joueur.ml: Raylib
+lib/joueur.ml:

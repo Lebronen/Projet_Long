@@ -18,12 +18,14 @@ type hitboxrectangle = position * position * position * position
     attack_point : int;
     jetpack_carburant_pourcentage : int;
     has_grappin : bool;
-    sprite : Raylib.Texture.t;
+    sprite : string;
+    sprite_height : float;
+    sprite_width : float;
     facing_right : bool;
     is_jumping : bool
 }
 
-let create_personnage nom img = 
+let create_personnage nom img h w = 
   {nom = nom;
   pos = (50. , (650.0 -. 92.0));
   is_moving_right = false;
@@ -33,7 +35,9 @@ let create_personnage nom img =
   attack_point = 10;
   jetpack_carburant_pourcentage = 0;
   has_grappin = false;
-  sprite= Raylib.load_texture img;
+  sprite= img;
+  sprite_height = h;
+  sprite_width = w;
   facing_right = true;
   is_jumping =false}
 ;;
@@ -72,6 +76,8 @@ let deplacer player =
   jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
   has_grappin = player.has_grappin;
   sprite = player.sprite;
+  sprite_height = player.sprite_height;
+  sprite_width = player.sprite_width;
   facing_right = player.facing_right;
   is_jumping = player.is_jumping
   }
@@ -90,6 +96,8 @@ let vel player v =
   jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
   has_grappin = player.has_grappin;
   sprite = player.sprite;
+  sprite_height = player.sprite_height;
+  sprite_width = player.sprite_width;
   facing_right = player.facing_right;
   is_jumping = player.is_jumping
   }
@@ -105,6 +113,8 @@ let vel player v =
     jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
     has_grappin = player.has_grappin;
     sprite = player.sprite;
+    sprite_height = player.sprite_height;
+    sprite_width = player.sprite_width;
     facing_right = true;
     is_jumping = player.is_jumping
     }
@@ -120,6 +130,8 @@ let vel player v =
       jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
       has_grappin = player.has_grappin;
       sprite = player.sprite;
+      sprite_height = player.sprite_height;
+      sprite_width = player.sprite_width;
       facing_right = false;
       is_jumping = player.is_jumping
       }

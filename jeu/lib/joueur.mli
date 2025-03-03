@@ -18,7 +18,9 @@ type joueur = {
     attack_point : int;
     jetpack_carburant_pourcentage : int;
     has_grappin : bool;
-    sprite : Raylib.Texture.t;
+    sprite : string;
+    sprite_height : float;
+    sprite_width : float;
     facing_right : bool;
     is_jumping : bool
 }
@@ -34,7 +36,7 @@ val moving_left : joueur -> bool -> joueur
 
 (* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
 
-val create_personnage : string -> string -> joueur
+val create_personnage : string -> string -> float -> float -> joueur
 
 (*val use_jetpack : joueur -> deplacement -> joueur
 

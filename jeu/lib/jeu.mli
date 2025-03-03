@@ -17,7 +17,7 @@ plateforme_list : plateforme list
 }
 
 
-val gameloop :  unit
+val gameloop :  unit -> unit
 
 
 (*
