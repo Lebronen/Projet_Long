@@ -64,7 +64,8 @@ let create_personnage nom img h w =
 
 let deplacer player =
   let (x, y) = player.pos in
-  let new_pos = (x +. fst player.vector_velocity , y +. snd player.vector_velocity)
+  let new_pos = if (y +. snd player.vector_velocity) > (650.0 -. 92.0) then (x +. fst player.vector_velocity , (650.0 -. 92.0))
+  else (x +. fst player.vector_velocity , y +. snd player.vector_velocity)
   in
   {nom = player.nom;
   pos = new_pos;
@@ -102,39 +103,7 @@ let vel player v =
   is_jumping = player.is_jumping
   }
 
-  (* let moving_right player move_right =
-    {nom = player.nom;
-    pos = player.pos;
-    vector_velocity = player.vector_velocity;
-    is_moving_right = move_right;
-    is_moving_left = player.is_moving_left;
-    health_point = player.health_point;
-    attack_point = player.attack_point;
-    jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
-    has_grappin = player.has_grappin;
-    sprite = player.sprite;
-    sprite_height = player.sprite_height;
-    sprite_width = player.sprite_width;
-    facing_right = true;
-    is_jumping = player.is_jumping
-    } *)
 
-     (* let moving_left player move_left=
-      {nom = player.nom;
-      pos = player.pos;
-      vector_velocity = player.vector_velocity;
-      is_moving_right = player.is_moving_right;
-      is_moving_left = move_left;
-      health_point = player.health_point;
-      attack_point = player.attack_point;
-      jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
-      has_grappin = player.has_grappin;
-      sprite = player.sprite;
-      sprite_height = player.sprite_height;
-      sprite_width = player.sprite_width;
-      facing_right = false;
-      is_jumping = player.is_jumping
-      } *)
 
     let moving_right player move_right =
       { player with 

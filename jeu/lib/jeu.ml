@@ -25,7 +25,7 @@ plateforme_list : plateforme list
 
     let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
     (* let game_texture = Raylib.load_texture "nouvelle-image.png" in *)
-    let player = create_personnage "eren" "../resources/eren.gif" 92. 100. in
+    let player = create_personnage "eren" "../resources/eren.gif" 92. 120. in
     let sprite_texture = Raylib.load_texture player.sprite in
     (menu_texture, sprite_texture, player)
   
@@ -36,7 +36,7 @@ plateforme_list : plateforme list
   (* Dimensions *)
   (* let screen_width = 1200
   let screen_height = 650 *)
-  let sprite_width = 120
+  let sprite_width = 130
   let sprite_height = 92
 
   
@@ -79,13 +79,13 @@ plateforme_list : plateforme list
           else player
         in
 
-        let player = vel player (0., 1.) in 
+        let player = vel player (0., 2.) in 
   
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
         let player = if (snd player.pos >= (650.0 -. 92.0)) then vel player (0., -.(snd player.vector_velocity))
         else player in 
 
-        let player = if is_key_pressed Key.Up && not player.is_jumping then vel player (0., -20.)
+        let player = if is_key_pressed Key.Up && not player.is_jumping then vel player (0., -30.)
         else player in
 
         player
