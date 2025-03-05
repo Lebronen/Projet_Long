@@ -83,7 +83,7 @@ plateforme_list : plateforme list
 
         let player = vel player (0., 1.) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-        let player = if (snd player.pos >= (650.0 -. 92.0))
+        let player = if (snd player.pos >= (650.0 -. 92.0)) || (snd player.pos >= (500.0 -. 20.0 -. 92.0) && fst player.pos <= 900.0 && fst player.pos >= 500.0 -. 65.0) && snd player.vector_velocity > 0.
           then vel (jump player false) (0., -.(snd player.vector_velocity))
         else player in 
 
@@ -92,6 +92,8 @@ plateforme_list : plateforme list
 
         let player = deplacer player 
         in
+
+
 
         player
         else player in

@@ -1,0 +1,3 @@
+open Jeu
+
+let () = gameloop ()
