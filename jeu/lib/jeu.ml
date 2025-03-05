@@ -17,6 +17,16 @@ player : joueur;
 plateforme_list : plateforme list
 }
 
+let check_collision player plateforme =
+  let px, py = player.pos in
+  px +. player.sprite_width > float_of_int plateforme.platform_x &&
+  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width &&
+  py +. player.sprite_height > float_of_int plateforme.platform_y &&
+  py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height
+
+  (* let player_on_platform player =
+    List.filter (check_collision player) p_list *)
+
   let setup () =
     Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
     Raylib.set_target_fps 60;
@@ -44,6 +54,16 @@ plateforme_list : plateforme list
     platform_width = 400;
     platform_height = 20;
   }
+
+  let plateforme_2 = {
+  platform_x = 100;
+  platform_y = 400;
+  platform_width = 200;
+  platform_height = 20;
+}
+
+let p_list = [plateforme; plateforme_2]
+
   let rec loop menu_texture sprite_texture player plateforme=
     if Raylib.window_should_close () then (
       Raylib.unload_texture menu_texture;
@@ -83,7 +103,7 @@ plateforme_list : plateforme list
 
         let player = vel player (0., 1.) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-        let player = if (snd player.pos >= (650.0 -. 92.0)) || (snd player.pos >= (500.0 -. 20.0 -. 92.0) && fst player.pos <= 900.0 && fst player.pos >= 500.0 -. 65.0) && snd player.vector_velocity > 0.
+        let player = if (snd player.pos >= (650.0 -. 92.0)) || List.exists (check_collision player ) p_list
           then vel (jump player false) (0., -.(snd player.vector_velocity))
         else player in 
 
@@ -111,7 +131,10 @@ plateforme_list : plateforme list
         let dest_rect = Rectangle.create (fst player.pos) (snd player.pos) (player.sprite_width) (player.sprite_height) in
         let origin = Vector2.create 0. 0. in
         draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;
-        draw_rectangle plateforme.platform_x plateforme.platform_y plateforme.platform_width plateforme.platform_height Color.black;
+        for i = 0 to List.length p_list - 1 do
+          let p = List.nth p_list i in
+          draw_rectangle p.platform_x p.platform_y p.platform_width p.platform_height Color.black;
+        done
         (* Dessiner la plateforme *)
         (* draw_rectangle platform_x platform_y platform_width platform_height Color.darkgray; *)
       end else begin
