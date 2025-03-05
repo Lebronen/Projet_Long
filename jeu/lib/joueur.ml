@@ -12,8 +12,6 @@ type hitboxrectangle = position * position * position * position
     nom : string;
     pos : position;
     vector_velocity : float * float;
-    is_moving_right : bool;
-    is_moving_left : bool;
     health_point : int;
     attack_point : int;
     jetpack_carburant_pourcentage : int;
@@ -28,8 +26,6 @@ type hitboxrectangle = position * position * position * position
 let create_personnage nom img h w = 
   {nom = nom;
   pos = (50. , (650.0 -. 92.0));
-  is_moving_right = false;
-  is_moving_left = false;
   vector_velocity = (0.,0.);
   health_point = 100;
   attack_point = 10;
@@ -70,8 +66,6 @@ let deplacer player =
   {nom = player.nom;
   pos = new_pos;
   vector_velocity = player.vector_velocity;
-  is_moving_right = player.is_moving_right;
-  is_moving_left = player.is_moving_left;
   health_point = player.health_point;
   attack_point = player.attack_point;
   jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
@@ -90,8 +84,6 @@ let vel player v =
   {nom = player.nom;
   pos = player.pos;
   vector_velocity = new_vel;
-  is_moving_right = player.is_moving_right;
-  is_moving_left = player.is_moving_left;
   health_point = player.health_point;
   attack_point = player.attack_point;
   jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
@@ -102,20 +94,6 @@ let vel player v =
   facing_right = player.facing_right;
   is_jumping = player.is_jumping
   }
-
-
-
-    let moving_right player move_right =
-      { player with 
-        is_moving_right = move_right;
-        facing_right = true
-      }
-
-    let moving_left player move_left =
-      { player with 
-        is_moving_left = move_left;
-        facing_right = false
-      }
 
       let jump player b =
         { player with 

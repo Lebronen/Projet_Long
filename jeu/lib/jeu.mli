@@ -5,10 +5,10 @@ type settings = {
   is_game_running : bool;
 }
 type plateforme = {
-  platform_x : float;
-  platform_y : float;
-  platform_width : float;
-  platform_height : float
+  platform_x : int;
+  platform_y : int;
+  platform_width : int;
+  platform_height : int
 }
 
 type entities = {
