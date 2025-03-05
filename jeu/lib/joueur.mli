@@ -34,6 +34,8 @@ val moving_right : joueur -> bool -> joueur
 
 val moving_left : joueur -> bool -> joueur
 
+val jump : joueur -> bool -> joueur
+
 (* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
 
 val create_personnage : string -> string -> float -> float -> joueur

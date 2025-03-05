@@ -1,6 +1,5 @@
 open Joueur
 
-
 type settings = {
   starttime : float;
   isstartvisible : bool;
@@ -17,7 +16,6 @@ type entities = {
 player : joueur;
 plateforme_list : plateforme list
 }
-
 
   let setup () =
     Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
@@ -39,9 +37,6 @@ plateforme_list : plateforme list
   let sprite_width = 130
   let sprite_height = 92
 
-  
-  
-  
   let rec loop menu_texture sprite_texture player =
     if Raylib.window_should_close () then (
       Raylib.unload_texture menu_texture;
@@ -72,20 +67,30 @@ plateforme_list : plateforme list
       (* Mise à jour du jeu *)
       if !is_game_running then
         let player =
-          if is_key_down Key.Right then if player.is_moving_right then player else vel (moving_right player true) (10.,0.)
+
+          (* if is_key_down Key.Right then if player.is_moving_right then player else vel (moving_right player true) (10.,0.)
         else if is_key_released Key.Right then vel (moving_right player false) (-10., 0.) 
           else if is_key_down Key.Left then if player.is_moving_left then player else vel (moving_left player true) (-10.,0.)
         else if is_key_released Key.Left then vel (moving_left player false) (10., 0.)
           else player
+        in *)
+
+        let player = if player.is_moving_right then vel (moving_right player false) (-10., 0.) 
+        else if player.is_moving_left then vel (moving_left player false) (10., 0.)
+        else player
+        in 
+        match (is_key_down Key.Right, is_key_down Key.Left) with
+        | true, false -> vel (moving_right player true) (10.,0.)
+        | false, true -> vel (moving_left player true) (-10.,0.)
+        | _, _ -> player
         in
 
         let player = vel player (0., 2.) in 
-  
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-        let player = if (snd player.pos >= (650.0 -. 92.0)) then vel player (0., -.(snd player.vector_velocity))
+        let player = if (snd player.pos >= (650.0 -. 92.0)) then vel (jump player false) (0., -.(snd player.vector_velocity))
         else player in 
 
-        let player = if is_key_pressed Key.Up && not player.is_jumping then vel player (0., -30.)
+        let player = if is_key_pressed Key.Up && not player.is_jumping then vel (jump player true) (0., -30.)
         else player in
 
         player
@@ -94,24 +99,7 @@ plateforme_list : plateforme list
         let player = deplacer player 
         in
 
-            (* Vérifier si le sprite touche le sol *)
-        (* if new_y >= float_of_int screen_height -. player.sprite_height then begin *)
-        (* Vérifier s'il atterrit sur la plateforme (seulement s'il ne veut pas traverser) *)
-        (* else if !velocity_y > 0. && not !falling_through_platform &&
-                new_y +. float_of_int sprite_height >= float_of_int platform_y &&
-                new_y +. float_of_int sprite_height <= float_of_int (platform_y + platform_height) &&
-                new_x +. float_of_int sprite_width > float_of_int platform_x &&
-                new_x < float_of_int (platform_x + platform_width) then begin
-          sprite_position := Vector2.create new_x (float_of_int (platform_y - sprite_height));
-          is_jumping := false;
-          velocity_y := 0.
-        end 
-        (* Si le sprite tombe sous la plateforme, il peut y atterrir à nouveau *)
-        else if new_y > float_of_int (platform_y + platform_height) then  
-        (* Mise à jour de la position *)
-        sprite_position := Vector2.create new_x new_y;
-        end;
-        *)
+      
         (* Dessin *)
         let draw_game player = 
 (

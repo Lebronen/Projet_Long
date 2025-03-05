@@ -117,11 +117,11 @@ let vel player v =
         facing_right = false
       }
 
-      (* let jumpb player b =
+      let jump player b =
         { player with 
         is_jumping = b;
         }
-   *)
+  
 
    
 
