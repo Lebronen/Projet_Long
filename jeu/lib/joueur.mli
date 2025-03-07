@@ -1,12 +1,12 @@
-type deplacement =
-  | HAUT
-  | BAS
-  | GAUCHE
-  | DROITE
-
 type position = float * float
 
 type hitboxrectangle = position * position * position * position
+
+type grappin = {
+  pos : position;
+  length : float;
+  using : bool
+  }
 
 type joueur = {
     nom : string;
@@ -15,7 +15,7 @@ type joueur = {
     health_point : int;
     attack_point : int;
     jetpack_carburant_pourcentage : int;
-    has_grappin : bool;
+    grap : grappin;
     sprite : string;
     sprite_height : float;
     sprite_width : float;

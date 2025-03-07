@@ -1,12 +1,13 @@
-type deplacement =
-  | HAUT
-  | BAS
-  | GAUCHE
-  | DROITE
 
-type position = float *float
+  type position = float * float
 
-type hitboxrectangle = position * position * position * position
+  type hitboxrectangle = position * position * position * position
+
+  type grappin = {
+  pos : position;
+  length : float;
+  using : bool
+  }
 
   type joueur = {
     nom : string;
@@ -15,7 +16,7 @@ type hitboxrectangle = position * position * position * position
     health_point : int;
     attack_point : int;
     jetpack_carburant_pourcentage : int;
-    has_grappin : bool;
+    grap : grappin;
     sprite : string;
     sprite_height : float;
     sprite_width : float;
@@ -30,88 +31,34 @@ let create_personnage nom img h w =
   health_point = 100;
   attack_point = 10;
   jetpack_carburant_pourcentage = 0;
-  has_grappin = false;
-  sprite= img;
+  grap = {
+    pos = (0. ,0.);
+    length = 50.;
+    using = false;
+  };
+  sprite = img;
   sprite_height = h;
   sprite_width = w;
   facing_right = true;
-  is_jumping =false}
+  is_jumping = false}
 ;;
 
 (* let drawme player = Raylib.load_texture player.sprite_img_name *)
 
-(* let deplacer player dp = 
-  let (x, y) = player.pos in
-  let new_pos = match dp with
-    |HAUT -> (x, y - 5)
-    |BAS -> (x, y + 5)
-    |GAUCHE -> (x - 5, y)
-    |DROITE -> (x + 5, y)
-  in
-  {nom = player.nom;
-  pos = new_pos;
-  health_point = player.health_point;
-  attack_point = player.attack_point;
-  jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
-  has_grappin = player.has_grappin;
-  sprite_img_name = player.sprite_img_name
-  }
-;; *)
-
 let deplacer player =
-  let (x, y) = player.pos in
-  let new_pos = if (y +. snd player.vector_velocity) > (650.0 -. 92.0) then (x +. fst player.vector_velocity , (650.0 -. 92.0))
-  else (x +. fst player.vector_velocity , y +. snd player.vector_velocity)
-  in
-  {nom = player.nom;
-  pos = new_pos;
-  vector_velocity = player.vector_velocity;
-  health_point = player.health_point;
-  attack_point = player.attack_point;
-  jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
-  has_grappin = player.has_grappin;
-  sprite = player.sprite;
-  sprite_height = player.sprite_height;
-  sprite_width = player.sprite_width;
-  facing_right = player.facing_right;
-  is_jumping = player.is_jumping
+  {player with 
+  pos = (fst player.pos +. fst player.vector_velocity, snd player.pos +. snd player.vector_velocity);
+  facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
   }
 
-let vel player v =
-  let (x, y) = player.vector_velocity in
-  let new_vel = (x +. fst v , y +. snd v)
-  in
-  {nom = player.nom;
-  pos = player.pos;
-  vector_velocity = new_vel;
-  health_point = player.health_point;
-  attack_point = player.attack_point;
-  jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage;
-  has_grappin = player.has_grappin;
-  sprite = player.sprite;
-  sprite_height = player.sprite_height;
-  sprite_width = player.sprite_width;
-  facing_right = player.facing_right;
-  is_jumping = player.is_jumping
-  }
 
-      let jump player b =
-        { player with 
-        is_jumping = b;
-        }
+  let vel player v =
+    { player with 
+    vector_velocity = (fst v +. fst player.vector_velocity, snd v +. snd player.vector_velocity)
+    }
+
+  let jump player b =
+    { player with 
+    is_jumping = b;
+    }
   
-
-   
-
-  (*
-  let modify_player player p v h a j g =
-  {nom = player.nom;
-  pos = p;
-  vector_velocity = v;
-  health_point = h;
-  attack_point = a;
-  jetpack_carburant_pourcentage = j;
-  has_grappin = g;
-  sprite = player.sprite
-  }
-  *)
