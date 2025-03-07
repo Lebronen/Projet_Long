@@ -19,8 +19,8 @@ plateforme_list : plateforme list
 
 let check_collision player plateforme =
   let px, py = player.pos in
-  px +. player.sprite_width > float_of_int plateforme.platform_x &&
-  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width &&
+  px +. player.sprite_width > float_of_int plateforme.platform_x +. 50. &&
+  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width -. 50. &&
   py +. player.sprite_height > float_of_int plateforme.platform_y &&
   py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height
 
@@ -108,9 +108,13 @@ let p_list = [plateforme; plateforme_2]
         (* gracité et colision du sol *)
         let player = vel player (0., 2.) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-        let player = if (snd player.pos >= (650.0 -. 92.0)) || List.exists (check_collision player ) p_list
+        let player = 
+          if (snd player.pos >= (650.0 -. 92.0)) || 
+             (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
           then vel (jump player false) (0., -.(snd player.vector_velocity))
-        else player in 
+          else player 
+        in
+        
 
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -30.)
         else player in

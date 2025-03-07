@@ -19,8 +19,8 @@ plateforme_list : plateforme list
 
 let check_collision player plateforme =
   let px, py = player.pos in
-  px +. player.sprite_width > float_of_int plateforme.platform_x &&
-  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width &&
+  px +. player.sprite_width > float_of_int plateforme.platform_x +. 50. &&
+  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width -. 50. &&
   py +. player.sprite_height > float_of_int plateforme.platform_y &&
   py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height
 
@@ -33,7 +33,7 @@ let check_collision player plateforme =
 
     let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
     (* let game_texture = Raylib.load_texture "nouvelle-image.png" in *)
-    let player = create_personnage "eren" "../resources/eren.gif" 92. 120. in
+    let player = create_personnage "eren" "../resources/eren.gif" 92. 135. in
     
     let sprite_texture = Raylib.load_texture player.sprite in
     (menu_texture, sprite_texture, player)
@@ -45,7 +45,7 @@ let check_collision player plateforme =
   (* Dimensions *)
   (* let screen_width = 1200
   let screen_height = 650 *)
-  let sprite_width = 130
+  let sprite_width = 135
   let sprite_height = 92
 
   let plateforme = {
@@ -93,19 +93,28 @@ let p_list = [plateforme; plateforme_2]
       let player = 
       (* Mise à jour du jeu *)
       if !is_game_running then
-        let player =
 
+          (*---------------- DEPLACEMENT PLAYER ----------------*)
+        (* let player =
+          if is_key_pressed Key.Space then player else player in *)
+
+        let player =
         match (is_key_down Key.Right, is_key_down Key.Left) with
         | true, false -> if fst player.vector_velocity < 12. then vel player (4.,0.) else player
         | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
         | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
 
-        let player = vel player (0., 1.) in 
+        (* gracité et colision du sol *)
+        let player = vel player (0., 2.) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-        let player = if (snd player.pos >= (650.0 -. 92.0)) || List.exists (check_collision player ) p_list
+        let player = 
+          if (snd player.pos >= (650.0 -. 92.0)) || 
+             (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
           then vel (jump player false) (0., -.(snd player.vector_velocity))
-        else player in 
+          else player 
+        in
+        
 
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -30.)
         else player in
@@ -113,12 +122,8 @@ let p_list = [plateforme; plateforme_2]
         let player = deplacer player 
         in
 
-
-
         player
-        else player in
-
-        
+        else player in     
 
         (* Dessin *)
         let draw_game player = 
