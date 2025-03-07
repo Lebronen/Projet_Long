@@ -113,12 +113,8 @@ let p_list = [plateforme; plateforme_2]
         let player = deplacer player 
         in
 
-
-
         player
-        else player in
-
-        
+        else player in     
 
         (* Dessin *)
         let draw_game player = 
