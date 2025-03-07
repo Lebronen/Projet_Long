@@ -109,8 +109,7 @@ let p_list = [plateforme; plateforme_2]
         let player = vel player (0., 2.) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
         let player = 
-          if (snd player.pos >= (650.0 -. 92.0)) || 
-             (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
+          if (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
           then vel (jump player false) (0., -.(snd player.vector_velocity))
           else player 
         in

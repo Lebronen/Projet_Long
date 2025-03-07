@@ -46,8 +46,10 @@ let create_personnage nom img h w =
 (* let drawme player = Raylib.load_texture player.sprite_img_name *)
 
 let deplacer player =
+  let y = if ((snd player.pos +. snd player.vector_velocity) > (650.0 -. 92.0)) then (650.0 -. 92.0) else snd player.pos +. snd player.vector_velocity
+  in
   {player with 
-  pos = (fst player.pos +. fst player.vector_velocity, snd player.pos +. snd player.vector_velocity);
+  pos = (fst player.pos +. fst player.vector_velocity, y);
   facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
   }
 
