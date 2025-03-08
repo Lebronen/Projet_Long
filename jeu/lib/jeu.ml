@@ -106,7 +106,7 @@ let p_list = [plateforme; plateforme_2]
         in
 
         (* gracité et colision du sol *)
-        let player = vel player (0., 2.) in 
+        let player = vel player (0., 0.8) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
         let player = if (snd player.pos >= (650.0 -. 92.0)) || 
           (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
@@ -115,7 +115,7 @@ let p_list = [plateforme; plateforme_2]
         in
         
 
-        let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -30.)
+        let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
         else player in
 
         let player = deplacer player 
