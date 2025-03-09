@@ -19,8 +19,8 @@ plateforme_list : plateforme list
 
 let check_collision player plateforme =
   let px, py = player.pos in
-  px +. player.sprite_width > float_of_int plateforme.platform_x +. 50. &&
-  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width -. 50. &&
+  px +. player.sprite_width > float_of_int plateforme.platform_x &&
+  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width &&
   py +. player.sprite_height > float_of_int plateforme.platform_y &&
   py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height
 
@@ -33,8 +33,9 @@ let check_collision player plateforme =
 
     let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
     (* let game_texture = Raylib.load_texture "nouvelle-image.png" in *)
-    let player = create_personnage "eren" "../resources/eren.gif" 92. 135. in
-    
+    (* let player = create_personnage "eren" "../resources/eren.gif" 92. 135. in *)
+    let player = create_personnage "eren" "../resources/red.png" 100. 100. in
+
     let sprite_texture = Raylib.load_texture player.sprite in
     (menu_texture, sprite_texture, player)
   
@@ -45,8 +46,8 @@ let check_collision player plateforme =
   (* Dimensions *)
   (* let screen_width = 1200
   let screen_height = 650 *)
-  let sprite_width = 135
-  let sprite_height = 92
+  (* let sprite_width = 100
+  let sprite_height = 100 *)
 
   let plateforme = {
     platform_x = 500;
@@ -62,7 +63,13 @@ let check_collision player plateforme =
   platform_height = 20;
 }
 
-let p_list = [plateforme; plateforme_2]
+let plateforme_3 = {
+  platform_x = 600;
+  platform_y = 200;
+  platform_width = 300;
+  platform_height = 20;
+}
+let p_list = [plateforme; plateforme_2; plateforme_3]
 
   let rec loop menu_texture sprite_texture player plateforme=
     if Raylib.window_should_close () then (
@@ -106,9 +113,15 @@ let p_list = [plateforme; plateforme_2]
         in
 
         (* gracité et colision du sol *)
-        let player = vel player (0., 0.8) in 
+        let player = vel player (0., 1.) in 
         (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-        let player = if (snd player.pos >= (650.0 -. 92.0)) || 
+
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650.)
+           then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
+          else player
+        in
+
+        let player = if 
           (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
           then vel (jump player false) (0., -.(snd player.vector_velocity))
           else player 
@@ -131,8 +144,8 @@ let p_list = [plateforme; plateforme_2]
         clear_background Color.raywhite;
   
       if !is_game_running then begin
-        let source_rect = Rectangle.create 0. 0. (if player.facing_right then float_of_int sprite_width else -. (float_of_int sprite_width)) (float_of_int sprite_height) in
-        let dest_rect = Rectangle.create (fst player.pos) (snd player.pos) (player.sprite_width) (player.sprite_height) in
+        let source_rect = Rectangle.create 0. 0. (if player.facing_right then player.sprite_width else -. (player.sprite_width)) (player.sprite_height) in
+        let dest_rect = Rectangle.create (fst player.pos) (snd player.pos) (player.sprite_width) (player.sprite_height) in 
         let origin = Vector2.create 0. 0. in
         draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;
         for i = 0 to List.length p_list - 1 do
