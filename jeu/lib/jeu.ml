@@ -100,17 +100,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         let player = vel player (0., 1.) in
 
 
-        let player = if is_key_down Key.Space then
-          let (vx', vy') = pendule (fst player.pos) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
-          in
-          let player = 
-            if player.grap.using then jump player true
-            else if player.facing_right 
-              then grapin (jump player true) true (fst player.pos +. 300., snd player.pos -. 100.)
-              else grapin (jump player true) true (fst player.pos -. 250., snd player.pos -. 100.)
-            in
-          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
-          else grapin player false player.grap.pos in
+        
 
 
         let player =
@@ -127,6 +117,17 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
           then let p = List.nth (wich_plateforme player entities.plateforme_list) 0 in vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos +. player.sprite_height))))
           else player
         in
+        let player = if is_key_down Key.Space then
+          let (vx', vy') = pendule (fst player.pos) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
+          in
+          let player = 
+            if player.grap.using then jump player true
+            else if player.facing_right 
+              then grapin (jump player true) true (fst player.pos +. 300., snd player.pos -. 100.)
+              else grapin (jump player true) true (fst player.pos -. 250., snd player.pos -. 100.)
+            in
+          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
+          else grapin player false player.grap.pos in
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
         else player in
         let player = deplacer player in player else player)
