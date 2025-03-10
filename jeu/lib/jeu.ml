@@ -19,6 +19,29 @@ type entities = {
   plateforme_list : plateforme list;
 }
 
+let pendule x y x' y' vx vy =
+  let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
+  (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
+  let ax = x +. vx in
+  let ay = y +. vy in
+
+  (* Étape 2 : Trouver le point le plus proche du cercle centré en (x', y') *)
+  let dx = ax -. x' in
+  let dy = ay -. y' in
+  let d = sqrt (dx ** 2. +. dy ** 2.) in
+
+  if d = 0. then (r, 0.) (* Éviter division par zéro, vecteur arbitraire *)
+  else
+    let d_x = dx /. d in
+    let d_y = dy /. d in
+    let px = x' +. r *. d_x in
+    let py = y' +. r *. d_y in
+
+    (* Étape 3 : Calcul du vecteur (vx', vy') de (x, y) vers (px, py) *)
+    let vx' = px -. x in
+    let vy' = py -. y in
+    (vx', vy')      
+
 let check_plateforme player plateform = 
   ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int plateform.platform_y
     && (snd player.pos +. player.sprite_height) <= float_of_int plateform.platform_y
@@ -75,17 +98,32 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
     let joueur = 
        (if !is_game_running then
         let player = vel player (0., 1.) in
+
+
+        let player = if is_key_down Key.Space then
+          let (vx', vy') = pendule (fst player.pos) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
+          in
+          let player = 
+            if player.grap.using then jump player true
+            else if player.facing_right 
+              then grapin (jump player true) true (fst player.pos +. 300., snd player.pos -. 100.)
+              else grapin (jump player true) true (fst player.pos -. 250., snd player.pos -. 100.)
+            in
+          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
+          else grapin player false player.grap.pos in
+
+
         let player =
           match (is_key_down Key.Right, is_key_down Key.Left) with
           | true, false -> if fst player.vector_velocity < 12. then vel player (4.,0.) else player
           | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
           | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
-        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650.)
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650. && not player.grap.using)
           then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
           else player
         in
-        let player = if is_on_plateforme player entities.plateforme_list
+        let player = if is_on_plateforme player entities.plateforme_list && not player.grap.using
           then let p = List.nth (wich_plateforme player entities.plateforme_list) 0 in vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos +. player.sprite_height))))
           else player
         in
@@ -93,6 +131,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         else player in
         let player = deplacer player in player else player)
       in {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list} in
+
     let draw_game entities = 
       begin_drawing (); 
       clear_background Color.raywhite;

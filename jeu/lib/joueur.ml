@@ -5,7 +5,6 @@
 
   type grappin = {
   pos : position;
-  length : float;
   using : bool
   }
 
@@ -34,7 +33,6 @@ let create_personnage nom img h w px py =
   jetpack_carburant_pourcentage = 0;
   grap = {
     pos = (0. ,0.);
-    length = 50.;
     using = false;
   };
   sprite = img;
@@ -74,3 +72,11 @@ let deplacer player =
     is_jumping = b;
     }
   
+  let grapin player b p =
+  {
+    player with
+    grap = {
+      pos = p;
+      using = b;
+    };
+  }
