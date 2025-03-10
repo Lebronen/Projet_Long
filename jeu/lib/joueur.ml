@@ -24,9 +24,10 @@
     is_jumping : bool
 }
 
-let create_personnage nom img h w = 
+let create_personnage nom img h w px py = 
   {nom = nom;
-  pos = (50. , (650.0 -. h -. 50.));
+  (* pos = (50. , (650.0 -. h -. 50.)); *)
+  pos = (px, (py -. h -. 50.));
   vector_velocity = (0.,0.);
   health_point = 100;
   attack_point = 10;

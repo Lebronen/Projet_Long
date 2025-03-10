@@ -32,7 +32,7 @@ val jump : joueur -> bool -> joueur
 
 (* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
 
-val create_personnage : string -> string -> float -> float -> joueur
+val create_personnage : string -> string -> float -> float -> float -> float -> joueur
 
 (*val use_jetpack : joueur -> deplacement -> joueur
 
