@@ -91,8 +91,12 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         in
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
         else player in
-        let player = deplacer player in player else player)
-      in {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list} in
+        let player = deplacer player in player else player) in
+        let ennemy = List.nth entities.ennemis 0
+      in let ennemy = 
+        (if (fst ennemy.pos) > 800. then vel ennemy (-1., 0.) else if (fst ennemy.pos) < 1200. then vel ennemy (1., 0.) else ennemy)
+      in {player = joueur; ennemis = [ennemy]; plateforme_list = entities.plateforme_list} in
+
     let draw_game entities = 
       begin_drawing (); 
       clear_background Color.raywhite;
