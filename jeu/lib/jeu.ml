@@ -17,12 +17,18 @@ player : joueur;
 plateforme_list : plateforme list
 }
 
-let check_collision player plateforme =
+(* let check_collision player plateforme =
+  if (snd player.pos < plateforme.platform_y && (snd player.vector_velocity +. snd player.pos +. player.sprite_height) > plateforme.platform_y) 
+ *)
+
+
+(* let check_collision player plateforme =
   let px, py = player.pos in
   px +. player.sprite_width > float_of_int plateforme.platform_x &&
   px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width &&
   py +. player.sprite_height > float_of_int plateforme.platform_y &&
-  py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height
+  py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height *)
+ 
 
   (* let player_on_platform player =
     List.filter (check_collision player) p_list *)
@@ -102,8 +108,22 @@ let p_list = [plateforme; plateforme_2; plateforme_3]
       if !is_game_running then
 
           (*---------------- DEPLACEMENT PLAYER ----------------*)
-        (* let player =
-          if is_key_pressed Key.Space then player else player in *)
+
+        (* gracité et colision du sol *)
+        let player = vel player (0., 1.) in 
+
+          (* 
+            position du grapin = (fst pos +. 200., snd pos -.200)
+            length = racine carre (fst pos grapin *  fst pos grapin + snd pos grapin * snd pos grapin)
+            vel player ()
+            x pos + velo
+            y pos + velo
+          *)
+
+        (* 
+          let player =
+          if is_key_pressed Key.Space then player else player in 
+        *)
 
         let player =
         match (is_key_down Key.Right, is_key_down Key.Left) with
@@ -112,20 +132,24 @@ let p_list = [plateforme; plateforme_2; plateforme_3]
         | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
 
-        (* gracité et colision du sol *)
-        let player = vel player (0., 1.) in 
-        (* (650.0 -. 92.0) est la valeur a laquel le personnage touche le sol car les coordonées du perso sont en haut a gauche du sprite *)
-
         let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650.)
            then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
           else player
         in
 
-        let player = if 
+        (* let player = if 
           (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
           then vel (jump player false) (0., -.(snd player.vector_velocity))
-          else player 
-        in
+          else player
+        in *)
+
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int plateforme.platform_y
+          && (snd player.pos +. player.sprite_height) <= float_of_int plateforme.platform_y
+          && (fst player.pos +. player.sprite_width) > float_of_int plateforme.platform_x
+          && (fst player.pos) < (float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width))
+          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int plateforme.platform_y -. (snd player.pos +. player.sprite_height))))
+         else player
+       in
         
 
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
