@@ -26,7 +26,7 @@
 
 let create_personnage nom img h w = 
   {nom = nom;
-  pos = (50. , (650.0 -. 92.0));
+  pos = (50. , (650.0 -. h -. 50.));
   vector_velocity = (0.,0.);
   health_point = 100;
   attack_point = 10;
@@ -51,6 +51,17 @@ let deplacer player =
   facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
   }
 
+  (* let deplacer player =
+    if ((snd player.pos +. snd player.vector_velocity) > (650.0 -. player.sprite_height)) then 
+    {player with 
+    pos = (fst player.pos +. fst player.vector_velocity, (650.0 -. player.sprite_height));
+    facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
+    }
+    else 
+    {player with 
+    pos = (fst player.pos +. fst player.vector_velocity, snd player.pos +. snd player.vector_velocity);
+    facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
+    } *)
 
   let vel player v =
     { player with 
