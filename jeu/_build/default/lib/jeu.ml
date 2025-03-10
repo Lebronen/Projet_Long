@@ -42,6 +42,9 @@ plateforme_list : plateforme list
 let is_on_plateforme player p_list =
   List.exists (check_plateforme player) p_list 
 
+  let wich_plateforme player p_list =
+    List.filter (check_plateforme player) p_list
+
 
   let setup () =
     Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
@@ -153,8 +156,8 @@ let p_list = [plateforme; plateforme_2; plateforme_3]
           else player
         in *)
 
-        let player = if is_on_plateforme player p_list
-          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int plateforme.platform_y -. (snd player.pos +. player.sprite_height))))
+        let player = if is_on_plateforme player p_list 
+          then let p =  List.nth (wich_plateforme player p_list) 0 in vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos +. player.sprite_height))))
          else player
        in
         

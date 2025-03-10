@@ -17,22 +17,6 @@ player : joueur;
 plateforme_list : plateforme list
 }
 
-(* let check_collision player plateforme =
-  if (snd player.pos < plateforme.platform_y && (snd player.vector_velocity +. snd player.pos +. player.sprite_height) > plateforme.platform_y) 
- *)
-
-
-(* let check_collision player plateforme =
-  let px, py = player.pos in
-  px +. player.sprite_width > float_of_int plateforme.platform_x &&
-  px < float_of_int plateforme.platform_x +. float_of_int plateforme.platform_width &&
-  py +. player.sprite_height > float_of_int plateforme.platform_y &&
-  py < float_of_int plateforme.platform_y +. float_of_int plateforme.platform_height *)
- 
-
-  (* let player_on_platform player =
-    List.filter (check_collision player) p_list *)
-
   let check_plateforme player plateform = 
     ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int plateform.platform_y
         && (snd player.pos +. player.sprite_height) <= float_of_int plateform.platform_y
@@ -41,6 +25,9 @@ plateforme_list : plateforme list
 
 let is_on_plateforme player p_list =
   List.exists (check_plateforme player) p_list 
+
+  let wich_plateforme player p_list =
+    List.filter (check_plateforme player) p_list
 
 
   let setup () =
@@ -147,14 +134,8 @@ let p_list = [plateforme; plateforme_2; plateforme_3]
           else player
         in
 
-        (* let player = if 
-          (snd player.vector_velocity > 0. && List.exists (check_collision player) p_list)
-          then vel (jump player false) (0., -.(snd player.vector_velocity))
-          else player
-        in *)
-
-        let player = if is_on_plateforme player p_list
-          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int plateforme.platform_y -. (snd player.pos +. player.sprite_height))))
+        let player = if is_on_plateforme player p_list 
+          then let p =  List.nth (wich_plateforme player p_list) 0 in vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos +. player.sprite_height))))
          else player
        in
         
