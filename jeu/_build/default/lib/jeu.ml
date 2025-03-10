@@ -62,7 +62,14 @@ let check_collision player plateforme =
   platform_height = 20;
 }
 
-let p_list = [plateforme; plateforme_2]
+let plateforme_3 = {
+  platform_x = 600;
+  platform_y = 200;
+  platform_width = 300;
+  platform_height = 20;
+}
+
+let p_list = [plateforme; plateforme_2; plateforme_3]
 
   let rec loop menu_texture sprite_texture player plateforme=
     if Raylib.window_should_close () then (
