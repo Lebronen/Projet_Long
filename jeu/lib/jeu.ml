@@ -109,7 +109,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
           | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
           | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
-        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650. && not player.grap.using)
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650.)
           then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
           else player
         in
@@ -123,8 +123,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
           let player = 
             if player.grap.using then jump player true
             else if player.facing_right 
-              then grapin (jump player true) true (fst player.pos +. 300., snd player.pos -. 100.)
-              else grapin (jump player true) true (fst player.pos -. 250., snd player.pos -. 100.)
+              then grapin (jump player true) true (fst player.pos +. 200., snd player.pos -. 100.)
+              else grapin (jump player true) true (fst player.pos -. 150., snd player.pos -. 100.)
             in
           vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
           else grapin player false player.grap.pos in
