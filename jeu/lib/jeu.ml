@@ -19,6 +19,9 @@ type entities = {
   plateforme_list : plateforme list;
 }
 
+let resolution_X = 1600
+let resolution_Y = 900 
+
 let pendule x y x' y' vx vy =
   let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
   (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
@@ -55,7 +58,7 @@ let wich_plateforme player p_list =
   List.filter (check_plateforme player) p_list
 
 let setup () =
-  Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
+  Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
@@ -68,7 +71,8 @@ let setup () =
   let plateforme = { platform_x = 500; platform_y = 500; platform_width = 400; platform_height = 20; } in
   let plateforme_2 = { platform_x = 100; platform_y = 400; platform_width = 200; platform_height = 20; } in
   let plateforme_3 = { platform_x = 600; platform_y = 200; platform_width = 300; platform_height = 20; } in
-  let p_list = [plateforme; plateforme_2; plateforme_3] in
+  let plateforme_4 = { platform_x = 900; platform_y = 700; platform_width = 400; platform_height = 20; } in
+  let p_list = [plateforme; plateforme_2; plateforme_3; plateforme_4] in
   let entities = { player; ennemis = [enemy]; plateforme_list = p_list } in
   (menu_texture, sprite_texture, enemy_texture, entities)
 
@@ -109,8 +113,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
           | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
           | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
-        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650.)
-          then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int resolution_Y -. 50.)
+          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int resolution_Y -. 50. -. (snd player.pos +. player.sprite_height))))
           else player
         in
         let player = if is_on_plateforme player entities.plateforme_list && not player.grap.using
@@ -123,8 +127,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
           let player = 
             if player.grap.using then jump player true
             else if player.facing_right 
-              then grapin (jump player true) true (fst player.pos +. 200., snd player.pos -. 100.)
-              else grapin (jump player true) true (fst player.pos -. 150., snd player.pos -. 100.)
+              then grapin (jump player true) true (fst player.pos +. 200., snd player.pos -. 150.)
+              else grapin (jump player true) true (fst player.pos -. 150., snd player.pos -. 150.)
             in
           vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
           else grapin player false player.grap.pos in
@@ -149,9 +153,12 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         
         List.iter (fun p -> draw_rectangle p.platform_x p.platform_y p.platform_width p.platform_height Color.black) entities.plateforme_list;
       end else begin
-        draw_texture menu_texture 0 0 Color.white;
-        draw_text "Bienvenue dans l'attaque des Titouan!" 130 100 50 Color.red;
-        if !is_start_visible then draw_text "START" 500 300 50 Color.red;
+        (* let origin = Vector2.create 0. 0. in
+        let menu_source = Rectangle.create 0. 0. (1200.) (673.) in
+        let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
+        draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white; *)
+        draw_text "Bienvenue dans l'attaque des Titouan!" 300 200 50 Color.red;
+        if !is_start_visible then draw_text "START" 690 400 50 Color.red;
       end;
       end_drawing (); 
     in
