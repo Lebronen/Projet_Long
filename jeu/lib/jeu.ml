@@ -62,7 +62,7 @@ let setup () =
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
-  let player = create_personnage "eren" "../resources/red.png" 100. 100. 50. 650. in
+  let player = create_personnage "eren" "../resources/red.png" 100. 100. 50. 800. in
   let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in
 
   let sprite_texture = Raylib.load_texture player.sprite in
@@ -103,18 +103,14 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
        (if !is_game_running then
         let player = vel player (0., 1.) in
 
-
-        
-
-
         let player =
           match (is_key_down Key.Right, is_key_down Key.Left) with
           | true, false -> if fst player.vector_velocity < 12. then vel player (4.,0.) else player
           | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
           | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
-        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int resolution_Y -. 50.)
-          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int resolution_Y -. 50. -. (snd player.pos +. player.sprite_height))))
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int resolution_Y)
+          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int resolution_Y -. (snd player.pos +. player.sprite_height))))
           else player
         in
         let player = if is_on_plateforme player entities.plateforme_list && not player.grap.using
