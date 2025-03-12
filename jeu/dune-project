@@ -4,6 +4,8 @@
 
 (generate_opam_files true)
 
+(implicit_transitive_deps true)  ; Permet de gérer les dépendances implicites
+
 (source
  (github username/reponame))
 
@@ -19,7 +21,7 @@
  (name jeu)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune raylib)
+ (depends ocaml dune raylib yojson)
  (tags
   (topics "to describe" your project)))
 

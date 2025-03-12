@@ -1,4 +1,5 @@
 open Joueur
+open Yojson
 
 type settings = {
   starttime : float;
@@ -18,6 +19,44 @@ type entities = {
   ennemis : joueur list;
   plateforme_list : plateforme list;
 }
+
+
+let parse_json file = 
+  let json = Basic.from_file file in
+  match json with
+  |`Assoc l -> if not  (List.length l = 1) then failwith "wrong level format" else (
+    let (_, pl) = List.hd l in match pl with
+    |`List plist -> List.map (fun p -> 
+      match p with
+      |`Assoc jp -> List.map (fun champ -> snd champ) jp
+      |_ -> failwith "wrong json format"
+      ) plist
+      |_ -> failwith "wrong json format")
+    | _ -> failwith "not a json object"
+      
+
+let pendule x y x' y' vx vy =
+  let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
+  (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
+  let ax = x +. vx in
+  let ay = y +. vy in
+
+  (* Étape 2 : Trouver le point le plus proche du cercle centré en (x', y') *)
+  let dx = ax -. x' in
+  let dy = ay -. y' in
+  let d = sqrt (dx ** 2. +. dy ** 2.) in
+
+  if d = 0. then (r, 0.) (* Éviter division par zéro, vecteur arbitraire *)
+  else
+    let d_x = dx /. d in
+    let d_y = dy /. d in
+    let px = x' +. r *. d_x in
+    let py = y' +. r *. d_y in
+
+    (* Étape 3 : Calcul du vecteur (vx', vy') de (x, y) vers (px, py) *)
+    let vx' = px -. x in
+    let vy' = py -. y in
+    (vx', vy')      
 
 let check_plateforme player plateform = 
   ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int plateform.platform_y
@@ -42,10 +81,16 @@ let setup () =
   let sprite_texture = Raylib.load_texture player.sprite in
   let enemy_texture = Raylib.load_texture enemy.sprite in
 
-  let plateforme = { platform_x = 500; platform_y = 500; platform_width = 400; platform_height = 20; } in
-  let plateforme_2 = { platform_x = 100; platform_y = 400; platform_width = 200; platform_height = 20; } in
-  let plateforme_3 = { platform_x = 600; platform_y = 200; platform_width = 300; platform_height = 20; } in
-  let p_list = [plateforme; plateforme_2; plateforme_3] in
+  let parsed_list = parse_json "../resources/level.json" in
+
+  let p_list = List.init (List.length parsed_list) (fun i -> 
+    let l = List.nth parsed_list i in
+    match l with
+    |x::y::w::h::[] -> (match (x,y,w,h) with
+    |(`Int xi, `Int yi, `Int wi, `Int hi) -> {platform_x = xi; platform_y = yi; platform_width = wi; platform_height = hi;}
+    | _ -> failwith "wrong json format")
+    | _ -> failwith "wrong json format"
+    ) in
   let entities = { player; ennemis = [enemy]; plateforme_list = p_list } in
   (menu_texture, sprite_texture, enemy_texture, entities)
 
@@ -70,32 +115,44 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
       end;
       if is_key_pressed Key.Enter then is_game_running := true;
     end;
-    let entities = 
+    let entities = (
     let player = entities.player in
     let joueur = 
        (if !is_game_running then
         let player = vel player (0., 1.) in
+
+
+        let player = if is_key_down Key.Space then
+          let (vx', vy') = pendule (fst player.pos) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
+          in
+          let player = 
+            if player.grap.using then jump player true
+            else if player.facing_right 
+              then grapin (jump player true) true (fst player.pos +. 300., snd player.pos -. 100.)
+              else grapin (jump player true) true (fst player.pos -. 250., snd player.pos -. 100.)
+            in
+          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
+          else grapin player false player.grap.pos in
+
+
         let player =
           match (is_key_down Key.Right, is_key_down Key.Left) with
           | true, false -> if fst player.vector_velocity < 12. then vel player (4.,0.) else player
           | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
           | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
-        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650.)
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650. && not player.grap.using)
           then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
           else player
         in
-        let player = if is_on_plateforme player entities.plateforme_list
+        let player = if is_on_plateforme player entities.plateforme_list && not player.grap.using
           then let p = List.nth (wich_plateforme player entities.plateforme_list) 0 in vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos +. player.sprite_height))))
           else player
         in
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
         else player in
-        let player = deplacer player in player else player) in
-        let ennemy = List.nth entities.ennemis 0
-      in let ennemy = 
-        (if (fst ennemy.pos) > 800. then vel ennemy (-1., 0.) else if (fst ennemy.pos) < 1200. then vel ennemy (1., 0.) else ennemy)
-      in {player = joueur; ennemis = [ennemy]; plateforme_list = entities.plateforme_list} in
+        let player = deplacer player in player else player)
+      in {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}) in
 
     let draw_game entities = 
       begin_drawing (); 
