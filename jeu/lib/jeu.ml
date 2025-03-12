@@ -34,6 +34,8 @@ let parse_json file =
       |_ -> failwith "wrong json format")
     | _ -> failwith "not a json object"
       
+let resolution_X = 1600
+let resolution_Y = 900 
 
 let pendule x y x' y' vx vy =
   let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
@@ -71,11 +73,11 @@ let wich_plateforme player p_list =
   List.filter (check_plateforme player) p_list
 
 let setup () =
-  Raylib.init_window 1200 650 "L'ATTAQUE DES TITOUAN";
+  Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
-  let player = create_personnage "eren" "../resources/red.png" 100. 100. 50. 650. in
+  let player = create_personnage "eren" "../resources/red.png" 100. 100. 50. 800. in
   let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in
 
   let sprite_texture = Raylib.load_texture player.sprite in
@@ -121,34 +123,31 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
        (if !is_game_running then
         let player = vel player (0., 1.) in
 
-
-        let player = if is_key_down Key.Space then
-          let (vx', vy') = pendule (fst player.pos) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
-          in
-          let player = 
-            if player.grap.using then jump player true
-            else if player.facing_right 
-              then grapin (jump player true) true (fst player.pos +. 300., snd player.pos -. 100.)
-              else grapin (jump player true) true (fst player.pos -. 250., snd player.pos -. 100.)
-            in
-          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
-          else grapin player false player.grap.pos in
-
-
         let player =
           match (is_key_down Key.Right, is_key_down Key.Left) with
           | true, false -> if fst player.vector_velocity < 12. then vel player (4.,0.) else player
           | false, true -> if fst player.vector_velocity > -12. then vel player (-4.,0.) else player
           | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
         in
-        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > 650. && not player.grap.using)
-          then vel (jump player false) (0., -.(snd player.vector_velocity -. (650. -. (snd player.pos +. player.sprite_height))))
+        let player = if ((snd player.vector_velocity +. snd player.pos +. player.sprite_height) > float_of_int resolution_Y)
+          then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int resolution_Y -. (snd player.pos +. player.sprite_height))))
           else player
         in
         let player = if is_on_plateforme player entities.plateforme_list && not player.grap.using
           then let p = List.nth (wich_plateforme player entities.plateforme_list) 0 in vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos +. player.sprite_height))))
           else player
         in
+        let player = if is_key_down Key.Space then
+          let (vx', vy') = pendule (fst player.pos) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
+          in
+          let player = 
+            if player.grap.using then jump player true
+            else if player.facing_right 
+              then grapin (jump player true) true (fst player.pos +. 200., snd player.pos -. 150.)
+              else grapin (jump player true) true (fst player.pos -. 150., snd player.pos -. 150.)
+            in
+          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
+          else grapin player false player.grap.pos in
         let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
         else player in
         let player = deplacer player in player else player)
@@ -170,9 +169,12 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         
         List.iter (fun p -> draw_rectangle p.platform_x p.platform_y p.platform_width p.platform_height Color.black) entities.plateforme_list;
       end else begin
-        draw_texture menu_texture 0 0 Color.white;
-        draw_text "Bienvenue dans l'attaque des Titouan!" 130 100 50 Color.red;
-        if !is_start_visible then draw_text "START" 500 300 50 Color.red;
+        (* let origin = Vector2.create 0. 0. in
+        let menu_source = Rectangle.create 0. 0. (1200.) (673.) in
+        let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
+        draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white; *)
+        (* draw_text "Bienvenue dans l'attaque des Titouan!" 300 200 50 Color.red; *)
+        if !is_start_visible then draw_text "Appuyez sur entrée pour commencer" 350 400 50 Color.red;
       end;
       end_drawing (); 
     in

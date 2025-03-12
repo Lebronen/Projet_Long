@@ -1,8 +1,0 @@
-lib: [
-  "_build/install/default/lib/jeu/META"
-  "_build/install/default/lib/jeu/dune-package"
-  "_build/install/default/lib/jeu/opam"
-]
-bin: [
-  "_build/install/default/bin/jeu"
-]
