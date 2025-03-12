@@ -1,3 +1,3 @@
 open Jeu
 
-let () = gameloop
+let () = gameloop ()

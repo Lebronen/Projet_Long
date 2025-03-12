@@ -1,30 +1,38 @@
-type deplacement =
-  | HAUT
-  | BAS
-  | GAUCHE
-  | DROITE
-
-type position = int *int
+type position = float * float
 
 type hitboxrectangle = position * position * position * position
+
+type grappin = {
+  pos : position;
+  using : bool
+  }
 
 type joueur = {
     nom : string;
     pos : position;
-    vector_velocity : int * int;
+    vector_velocity : float *float;
     health_point : int;
     attack_point : int;
     jetpack_carburant_pourcentage : int;
-    has_grappin : bool;
-    sprite_img_name : string
+    grap : grappin;
+    sprite : string;
+    sprite_height : float;
+    sprite_width : float;
+    facing_right : bool;
+    is_jumping : bool
 }
 
 
-val deplacer : joueur -> int * int -> joueur
+val deplacer : joueur -> joueur
 
-val drawme : joueur -> Raylib.Texture.t
+val vel : joueur -> float * float -> joueur
 
-val create_personnage : string -> string -> joueur
+val jump : joueur -> bool -> joueur
+
+val grapin : joueur -> bool -> position -> joueur
+(* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
+
+val create_personnage : string -> string -> float -> float -> float -> float -> joueur
 
 (*val use_jetpack : joueur -> deplacement -> joueur
 

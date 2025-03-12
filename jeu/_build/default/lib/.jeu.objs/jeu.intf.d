@@ -1,1 +1,1 @@
-lib/jeu.mli:
+lib/jeu.mli: Joueur
