@@ -26,4 +26,22 @@ TODO
 	- execute le jeu
 [ ] Prototype des deplacements du joueur
 
+# 12/03/2025 Degorre
+
+Done
+
+[X] Créer un projet dune et organiser les fichiers par consequence
+[X] Prototype des deplacements du joueur
+[X] Affichage d'un ennemi
+
+Todo
+
+[ ] Détailer dans le fichier `README.md` quelle commande
+	- compile le code
+	- execute le jeu
+[ ] Déplacement des ennemis
+[ ] Niveaux en fichiers texte (avec éléments au delà de ce que le moteur gère déjà -> chaque niveau prédéfini sert de jalon de fonctionnalités à implémenter). Gagnez du temps en utilisant un format déjà géré par une bibliothèque existante (JSON ? YAML ? autre ?)
+[ ] collisions
+[ ] défilement
+[ ] ...
 
