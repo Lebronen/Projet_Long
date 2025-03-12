@@ -153,8 +153,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         let menu_source = Rectangle.create 0. 0. (1200.) (673.) in
         let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
         draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white; *)
-        draw_text "Bienvenue dans l'attaque des Titouan!" 300 200 50 Color.red;
-        if !is_start_visible then draw_text "START" 690 400 50 Color.red;
+        (* draw_text "Bienvenue dans l'attaque des Titouan!" 300 200 50 Color.red; *)
+        if !is_start_visible then draw_text "Appuyez sur entrée pour commencer" 350 400 50 Color.red;
       end;
       end_drawing (); 
     in
