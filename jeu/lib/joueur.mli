@@ -16,8 +16,8 @@ type joueur = {
     jetpack_carburant_pourcentage : int;
     grap : grappin;
     sprite : string;
-    sprite_height : float;
-    sprite_width : float;
+    height : float;
+    width : float;
     facing_right : bool;
     is_jumping : bool
 }

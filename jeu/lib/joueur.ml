@@ -2,6 +2,7 @@
   type position = float * float
 
   type hitboxrectangle = position * position * position * position
+  (* haut gauche, haut droite, bas droite, bas gauche *)
 
   type grappin = {
   pos : position;
@@ -17,8 +18,8 @@
     jetpack_carburant_pourcentage : int;
     grap : grappin;
     sprite : string;
-    sprite_height : float;
-    sprite_width : float;
+    height : float;
+    width : float;
     facing_right : bool;
     is_jumping : bool
 }
@@ -35,31 +36,17 @@ let create_personnage nom img h w px py =
     using = false;
   };
   sprite = img;
-  sprite_height = h;
-  sprite_width = w;
+  height = h;
+  width = w;
   facing_right = true;
   is_jumping = false}
 ;;
-
-(* let drawme player = Raylib.load_texture player.sprite_img_name *)
 
 let deplacer player =
   {player with 
   pos = (fst player.pos +. fst player.vector_velocity, snd player.pos +. snd player.vector_velocity);
   facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
   }
-
-  (* let deplacer player =
-    if ((snd player.pos +. snd player.vector_velocity) > (650.0 -. player.sprite_height)) then 
-    {player with 
-    pos = (fst player.pos +. fst player.vector_velocity, (650.0 -. player.sprite_height));
-    facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
-    }
-    else 
-    {player with 
-    pos = (fst player.pos +. fst player.vector_velocity, snd player.pos +. snd player.vector_velocity);
-    facing_right = if (fst player.vector_velocity > 0.) then true else if (fst player.vector_velocity < 0.) then false else (player.facing_right);
-    } *)
 
   let vel player v =
     { player with 
