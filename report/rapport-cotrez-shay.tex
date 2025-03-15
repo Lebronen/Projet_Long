@@ -56,8 +56,8 @@ ennemis, animation pour les attaques, ...) sera considéré comme du bonus.
 \subsection{réalisation du projet}
 La réalisation du projet suis plusieurs étapes pour chaque ajout d'élément. D'abord nous ajoutons l'élément à la structure du jeu puis nous l'affichons si 
 il y a besoin de l'afficher et enfin nous implementons les relations entre l'élément ajouté et les éléments existant. Par exemple pour l'ajout des plateforme nous
-ajoutons la structure et les attributs associés ensuite nous l'affichons et enfin nous implementons les colisions avec le personnage pour qu'il puisse se tenir dessus.
-Nous réalisons le projet en nous attribuant chacun une des tâches du du planning lié à un élément.
+ajoutons la structure et les attributs associés ensuite nous l'affichons et enfin nous implementons les collisions avec le personnage pour qu'il puisse se tenir dessus.
+Nous réalisons le projet en nous attribuant chacun une des tâches du planning lié à un élément.
 
 \subsection{partie du logiciel codée}
 Pour le moment nous avons codé les déplacements du joueur (grappin inclus), l'affichage d'un menu ainsi que du premier niveau (avec plateformes et un ennemi),
@@ -69,14 +69,14 @@ projet !). Les uniques effets de bords proviennent de l'utilisation de librairie
 Nous avons utilisé le gestionnaire Dune pour instancier la structure de notre projet. Actuellement, nous avons deux classes principales
 séparées dans deux fichiers ml (+ deux fichiers mli associés pour l'interface) : jeu et joueur. La classe joueur contient tout ce qui est nécéssaire à l'instaciation
 d'un nouveau joueur (joueur principal comme ennemi, nous ferons la distinctions dans l'implémentation du jeu). Elle possède donc tous les attributs utiles tels
-que les dimensions, la direction, le vecteur de position, ... La classe jeu contient l'initialisation et la boucle principale du jeu. Elle possède également
+que les dimensions, la direction, le vecteur de position. La classe jeu contient l'initialisation et la boucle principale du jeu. Elle possède également
 des structures facilitant la gestion des différentes entitées (joueurs, ennemis, plateformes).
 
 
 
 \subsection{représentation des données}
 Le projet étant un jeu nous avons donc besoin de stocker les données du terrain, du joueur, des ennemis, et des objets récuperables. Etant donné que nous le faisons
-en fonctionnel (ocaml) nous n'utilisons pas d'objet pour enregistrer ces données. À la place nous utilisons des structures qui sont appelées dans la fonction 
+en  programmation fonctionnel (ocaml) nous n'utilisons pas d'objet pour enregistrer ces données. À la place nous utilisons des structures qui sont appelées dans la fonction 
 de boucle du jeu et que nous modifions au cours de l'exécution. La structure entities~(\ref{Ocaml structure}) regroupe tous les types d'entitées utilisés: le personnage du joueur (player), 
 la liste des ennemis (ennemi list), la liste des plateformes (plateforme list). Le jeu possède plusieurs niveaux avec des emplacements de plateformes, d'ennemis et 
 d'objets differents que nous stockons dans plusieurs fichiers .json, ainsi nous créons un nouveau niveau en ajoutant un fichier levelX.json (X étant le numéro du niveau).
