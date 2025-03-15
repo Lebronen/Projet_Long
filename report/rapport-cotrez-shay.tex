@@ -19,6 +19,9 @@
 %% This package is needed to enchance mathematical formulas.
 \usepackage{amsmath}
 
+\usepackage{enumitem}
+
+\usepackage{placeins} % Empêche les flottants de passer à une autre section
 
 % Latex allows you to define your own "commands",
 % better known as "macros" in the Latex world.
@@ -51,8 +54,10 @@ ennemis, animation pour les attaques, ...) sera considéré comme du bonus.
 \section{Implémentation}
 
 \subsection{réalisation du projet}
-Nous réalisons le projet en nous attribuant chacun une des tâches du planning (pas de branche séparée pour le moment). Nous utilisons le système de
-compilation Dune afin de gérer facilement l'organisation des fichiers et les dépendances. Pour l'interface graphique, nous nous servons de la librairie Raylib.
+La réalisation du projet suis plusieurs étapes pour chaque ajout d'élément. D'abord nous ajoutons l'élément à la structure du jeu puis nous l'affichons si 
+il y a besoin de l'afficher et enfin nous implementons les relations entre l'élément ajouté et les éléments existant. Par exemple pour l'ajout des plateforme nous
+ajoutons la structure et les attributs associés ensuite nous l'affichons et enfin nous implementons les colisions avec le personnage pour qu'il puisse se tenir dessus.
+Nous réalisons le projet en nous attribuant chacun une des tâches du du planning lié à un élément.
 
 \subsection{partie du logiciel codée}
 Pour le moment nous avons codé les déplacements du joueur (grappin inclus), l'affichage d'un menu ainsi que du premier niveau (avec plateformes et un ennemi),
@@ -61,10 +66,67 @@ veillé à implémenter la plus grande partie possible de manière fonctionnelle
 projet !). Les uniques effets de bords proviennent de l'utilisation de librairie Raylib pour l'affichage de l'interface graphique.
 
 \subsection{structure en modules/packages}
-Comme dit précédemment, nous avons utilisé le gestionnaire Dune pour instancier la structure de notre projet. Actuellement, nous avons deux classes principales
+Nous avons utilisé le gestionnaire Dune pour instancier la structure de notre projet. Actuellement, nous avons deux classes principales
 séparées dans deux fichiers ml (+ deux fichiers mli associés pour l'interface) : jeu et joueur. La classe joueur contient tout ce qui est nécéssaire à l'instaciation
 d'un nouveau joueur (joueur principal comme ennemi, nous ferons la distinctions dans l'implémentation du jeu). Elle possède donc tous les attributs utiles tels
 que les dimensions, la direction, le vecteur de position, ... La classe jeu contient l'initialisation et la boucle principale du jeu. Elle possède également
 des structures facilitant la gestion des différentes entitées (joueurs, ennemis, plateformes).
 
+
+
+\subsection{représentation des données}
+Le projet étant un jeu nous avons donc besoin de stocker les données du terrain, du joueur, des ennemis, et des objets récuperable. Etant donné que nous le faisons 
+en fonctionnel (ocaml) nous n'utilisons pas d'objet pour enregistrer ses données. A la place nous utilisons des structures qui sont appelés dans la fonction 
+de boucle du jeu et que nous modifions au cours de l'execution. La structure entities~(\ref{Ocaml structure}) regroupes toutes les types d'entitées utiliser: le personnage du joueur (player), 
+la liste des ennemi (ennemi list), la liste des plateformes (plateforme list). Le jeu possède plusieurs niveau avec des emplacements de plateformes, d'ennemi et 
+d'objets differents que nous stockons dans plusieurs fichiers .json, ainsi nous créons un nouveau niveau en ajoutant un fichier levelX.json (X étant le numéro du niveau).
+
+
+\subsection{technologies}
+
+  \begin{itemize}[label=\textbullet]
+    \item {\tt OCaml :} Langage de programmation fonctionnelle utilisé pour le developpement du jeu
+    \item {\tt Raylib :} Bibliothèque d'OCaml permettant l'affichage graphique du jeu
+    \item {\tt JSON :} Format de fichier utilisé pour la definition des niveaux
+    \item {\tt Dune :} Système de construction permettant la simplification de la compilation et la gestion de la structure du projet
+  \end{itemize}
+
+\section{Jalons}
+
+\begin{figure}[H]
+  \label{fig:calendartask}
+  \hrulefill
+  \begin{center}
+  \includegraphics[height=133px,width=350px]{calendar}
+  \end{center}
+  \caption{Planning des taches du projet}
+  \hrulefill
+  \end{figure}
+
+\subsection{tache restante}
+Nous avons encore à ajouter des ennemis, les objets collectables, le déclencheur determinant la fin du niveau et le passage au suivant (le personnage doit entrée 
+dans une porte pour passer au niveau suivant), et le système de combat permettant d'éliminer les ennemis (une attaque en mêlée avec une épée et une attaque à distance 
+en lancant un projectile). En bonus nous pouvons faire l'ajout du jeu en réseaux permettant à deux personnes de contrôler 
+chacun un personnage et l'ajout d'une intelligence artificiel pour les ennemis leur permettant de se déplacer de manière optimal pour gêner le joueur.
+
+\subsection{organisation des taches}
+Le calendrier~(\ref{fig:calendartask}) ci dessus montre la répartission et la date limite de chaque tâche.
+Pour mener le projet à sa conclusions nous nous concentrons à présent sur l'implementation des derniers aspect cruciaux du jeu incluant les ennemis, les combats 
+(attaque du personnage) et la fin de chaque niveaux et passage au suivant.
+
+\subsection{taches terminées}
+Nous avons fini d'implémenter la physique des déplacements du joueur incluant les deplacements simple (gauche, droite et saut) ainsi que la mécanique de pendule lié à 
+l'utilisation du grapin. La plateforme sont implémenté avec la possibilité du personnage de se maintenir dessus. L'affichage du personnage, des plateformes et des
+ennemis est terminées.
+
+\section{Annexe}
+\label{Ocaml structure}
+\FloatBarrier
+\begin{figure}[H]
+  \hrulefill
+  \inputminted{OCaml}{structure.ml}
+  \caption{structure de données des élement du jeu}
+  
+  \hrulefill
+  \end{figure}
 \end{document}
