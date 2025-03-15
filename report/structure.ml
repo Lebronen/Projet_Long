@@ -11,6 +11,8 @@ type entities = {
   plateforme_list : plateforme list;
 }
 
+type position = float * float
+
 type joueur = {
   nom : string;
   pos : position;
@@ -25,3 +27,7 @@ type joueur = {
   facing_right : bool;
   falling : bool
 }
+type grappin = {
+  pos : position;
+  using : bool
+  }
