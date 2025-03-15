@@ -4,7 +4,6 @@ type hitboxrectangle = position * position * position * position
 
 type grappin = {
   pos : position;
-  length : float;
   using : bool
   }
 
@@ -30,6 +29,7 @@ val vel : joueur -> float * float -> joueur
 
 val jump : joueur -> bool -> joueur
 
+val grapin : joueur -> bool -> position -> joueur
 (* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
 
 val create_personnage : string -> string -> float -> float -> float -> float -> joueur

@@ -1,0 +1,7 @@
+{
+    "plateformes" : [
+        {"x" : 500, "y" : 500, "width" : 400, "height" : 20},
+        {"x" : 100, "y" : 400, "width" : 200, "height" : 20},
+        {"x" : 600, "y" : 200, "width" : 300, "height" : 20}
+    ]
+}

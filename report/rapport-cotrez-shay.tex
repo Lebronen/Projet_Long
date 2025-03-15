@@ -75,10 +75,10 @@ des structures facilitant la gestion des différentes entitées (joueurs, ennemi
 
 
 \subsection{représentation des données}
-Le projet étant un jeu nous avons donc besoin de stocker les données du terrain, du joueur, des ennemis, et des objets récuperable. Etant donné que nous le faisons 
-en fonctionnel (ocaml) nous n'utilisons pas d'objet pour enregistrer ses données. A la place nous utilisons des structures qui sont appelés dans la fonction 
-de boucle du jeu et que nous modifions au cours de l'execution. La structure entities~(\ref{Ocaml structure}) regroupes toutes les types d'entitées utiliser: le personnage du joueur (player), 
-la liste des ennemi (ennemi list), la liste des plateformes (plateforme list). Le jeu possède plusieurs niveau avec des emplacements de plateformes, d'ennemi et 
+Le projet étant un jeu nous avons donc besoin de stocker les données du terrain, du joueur, des ennemis, et des objets récuperables. Etant donné que nous le faisons
+en fonctionnel (ocaml) nous n'utilisons pas d'objet pour enregistrer ces données. À la place nous utilisons des structures qui sont appelées dans la fonction 
+de boucle du jeu et que nous modifions au cours de l'exécution. La structure entities~(\ref{Ocaml structure}) regroupe tous les types d'entitées utilisés: le personnage du joueur (player), 
+la liste des ennemis (ennemi list), la liste des plateformes (plateforme list). Le jeu possède plusieurs niveaux avec des emplacements de plateformes, d'ennemis et 
 d'objets differents que nous stockons dans plusieurs fichiers .json, ainsi nous créons un nouveau niveau en ajoutant un fichier levelX.json (X étant le numéro du niveau).
 
 
@@ -99,25 +99,25 @@ d'objets differents que nous stockons dans plusieurs fichiers .json, ainsi nous 
   \begin{center}
   \includegraphics[height=133px,width=350px]{calendar}
   \end{center}
-  \caption{Planning des taches du projet}
+  \caption{Planning des tâches du projet}
   \hrulefill
   \end{figure}
 
-\subsection{tache restante}
-Nous avons encore à ajouter des ennemis, les objets collectables, le déclencheur determinant la fin du niveau et le passage au suivant (le personnage doit entrée 
+\subsection{tâches restantes}
+Nous avons encore à ajouter des ennemis, les objets collectables, le déclencheur determinant la fin du niveau et le passage au suivant (le personnage doit entrer 
 dans une porte pour passer au niveau suivant), et le système de combat permettant d'éliminer les ennemis (une attaque en mêlée avec une épée et une attaque à distance 
-en lancant un projectile). En bonus nous pouvons faire l'ajout du jeu en réseaux permettant à deux personnes de contrôler 
-chacun un personnage et l'ajout d'une intelligence artificiel pour les ennemis leur permettant de se déplacer de manière optimal pour gêner le joueur.
+en lancant un projectile). En bonus nous pouvons faire l'ajout du jeu en réseau permettant à deux personnes de contrôler 
+chacune un personnage et l'ajout d'une intelligence artificielle pour les ennemis leur permettant de se déplacer de manière optimale pour gêner le joueur.
 
-\subsection{organisation des taches}
-Le calendrier~(\ref{fig:calendartask}) ci dessus montre la répartission et la date limite de chaque tâche.
-Pour mener le projet à sa conclusions nous nous concentrons à présent sur l'implementation des derniers aspect cruciaux du jeu incluant les ennemis, les combats 
-(attaque du personnage) et la fin de chaque niveaux et passage au suivant.
+\subsection{organisation des tâches}
+Le calendrier~(\ref{fig:calendartask}) ci dessus montre la répartition et la date limite de chaque tâche.
+Pour mener le projet à sa conclusion nous nous concentrons à présent sur l'implémentation des derniers aspects cruciaux du jeu incluant les ennemis, les combats 
+(attaque du personnage), la fin de chaque niveau et passage au suivant.
 
-\subsection{taches terminées}
-Nous avons fini d'implémenter la physique des déplacements du joueur incluant les deplacements simple (gauche, droite et saut) ainsi que la mécanique de pendule lié à 
-l'utilisation du grapin. La plateforme sont implémenté avec la possibilité du personnage de se maintenir dessus. L'affichage du personnage, des plateformes et des
-ennemis est terminées.
+\subsection{tâches terminées}
+Nous avons fini d'implémenter la physique des déplacements du joueur incluant les déplacements simples (gauche, droite et saut) ainsi que la mécanique de pendule lié à 
+l'utilisation du grapin. Les plateformes sont implémenté avec la possibilité du personnage de se maintenir dessus. L'affichage du personnage, des plateformes et des
+ennemis est terminée.
 
 \section{Annexe}
 \label{Ocaml structure}
