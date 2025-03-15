@@ -26,11 +26,11 @@
 
 let create_personnage nom img h w px py = 
   {nom = nom;
-  pos = (px, (py -. h -. 50.));
+  pos = (px, (py -. h));
   vector_velocity = (0.,0.);
   health_point = 100;
   attack_point = 10;
-  jetpack_carburant_pourcentage = 0;
+  jetpack_carburant_pourcentage = 500;
   grap = {
     pos = (0. ,0.);
     using = false;
@@ -66,3 +66,9 @@ let deplacer player =
       using = b;
     };
   }
+
+  let carbu player =
+    {
+      player with
+      jetpack_carburant_pourcentage = player.jetpack_carburant_pourcentage -1;
+    }

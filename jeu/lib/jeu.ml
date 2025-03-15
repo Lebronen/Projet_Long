@@ -75,11 +75,13 @@ let wich_plateforme player p_list =
 let setup () =
   Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
   Raylib.set_target_fps 60;
+  (* Raylib.begin_blend_mode Alpha; *)
 
-  let menu_texture = Raylib.load_texture "../resources/attaque-titans.png" in
+  let menu_texture = Raylib.load_texture "../resources/fondmedievale.png" in
   (* let player = create_personnage "eren" "../resources/red.png" 50. 50. 50. 800. in *)
-  let player = create_personnage "eren" "../resources/player.jpg" 100. 80. 50. 800. in
+  let player = create_personnage "eren" "../resources/player1.jpg" 200. 150. 50. 850. in
   let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in
+  (* let background = Raylib.load_texture "../resources/fondmedievale.png" in *)
 
   let sprite_texture = Raylib.load_texture player.sprite in
   let enemy_texture = Raylib.load_texture enemy.sprite in
@@ -142,7 +144,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
           let (vx', vy') = pendule (fst player.pos +. (player.width /. 2.)) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
           in
           let player = 
-            if player.grap.using then jump player true
+            if player.grap.using then jump (carbu player) true
             else if player.facing_right 
               then grapin (jump player true) true (fst player.pos +. 200. +. (player.width /. 2.), snd player.pos -. 200.)
               else grapin (jump player true) true (fst player.pos -. 200. +. (player.width /. 2.), snd player.pos -. 200.)
@@ -156,8 +158,13 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
 
     let draw_game entities = 
       begin_drawing (); 
-      clear_background Color.raywhite;
+      clear_background Color.white;
       if !is_game_running then begin
+        (* let origin = Vector2.create 0. 0. in
+        let menu_source = Rectangle.create 0. 0. (4500.) (2530.) in
+        let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
+        draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white; *)
+
         let player = entities.player in
         let source_rect = Rectangle.create 0. 0. (if player.facing_right then (512.) else -. (512.)) (1024.) in
         let dest_rect = Rectangle.create (fst player.pos) (snd player.pos) (player.width) (player.height) in 
@@ -170,12 +177,20 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
         let enemy_dest_rect = Rectangle.create (1000.) (550.) (enemy.width) (enemy.height) in
         draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white; *)
         
+        draw_rectangle 50 50 (3*player.health_point) 20 Color.green;
+
+        (* let origin = Vector2.create 0. 0. in
+        let menu_source = Rectangle.create 0. 0. (4500.) (2530.) in
+        let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
+        draw_texture_pro background menu_source menu_dest_rect origin 0. Color.white; *)
+        
         List.iter (fun p -> draw_rectangle p.platform_x p.platform_y p.platform_width p.platform_height Color.black) entities.plateforme_list;
       end else begin
         (* let origin = Vector2.create 0. 0. in
-        let menu_source = Rectangle.create 0. 0. (1200.) (673.) in
+        let menu_source = Rectangle.create 0. 0. (4500.) (2530.) in
         let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
         draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white; *)
+
         (* draw_text "Bienvenue dans l'attaque des Titouan!" 300 200 50 Color.red; *)
         if !is_start_visible then draw_text "Appuyez sur entrée pour commencer" 350 400 50 Color.red;
       end;
