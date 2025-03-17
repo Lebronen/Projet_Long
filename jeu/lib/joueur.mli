@@ -12,14 +12,13 @@ type joueur = {
     pos : position;
     vector_velocity : float *float;
     health_point : int;
-    attack_point : int;
     jetpack_carburant_pourcentage : int;
     grap : grappin;
     sprite : string;
     height : float;
     width : float;
     facing_right : bool;
-    is_jumping : bool
+    airborn : bool
 }
 
 
@@ -32,13 +31,11 @@ val jump : joueur -> bool -> joueur
 val grapin : joueur -> bool -> position -> joueur
 
 val carbu : joueur -> joueur
-(* val modify_player : joueur -> float * float -> float * float -> int -> int -> int -> bool -> joueur *)
 
 val create_personnage : string -> string -> float -> float -> float -> float -> joueur
 
-(*val use_jetpack : joueur -> deplacement -> joueur
+(*
 
 val use_grappin : joueur -> deplacement -> joueur
 
-val attack : joueur -> hitbox
 *)
