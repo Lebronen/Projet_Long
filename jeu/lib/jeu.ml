@@ -1,4 +1,5 @@
 open Joueur
+(* open Ennemi *)
 open Yojson
 
 type settings = {
@@ -66,6 +67,20 @@ let check_plateforme player plateform =
     && (fst player.pos +. player.width) > float_of_int plateform.platform_x
     && (fst player.pos) < (float_of_int plateform.platform_x +. float_of_int plateform.platform_width))
 
+(* 
+test collision horizontal
+let check_plateforme player plateform = 
+  ((fst player.vector_velocity +. fst player.pos +. player.width) > float_of_int plateform.platform_x
+    && (fst player.pos +. player.widht) <= float_of_int plateform.platform_x
+    && (snd player.pos +. player.height) > float_of_int plateform.platform_y
+    && (snd player.pos) < (float_of_int plateform.platform_y +. float_of_int plateform.platform_heigth))
+    ||
+    fst player.vector_velocity +. fst player.pos) > (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
+    && (fst player.pos ) >= (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
+    && (snd player.pos +. player.height) > float_of_int plateform.platform_y
+    && (snd player.pos) < (float_of_int plateform.platform_y +. float_of_int plateform.platform_heigth))
+*)
+
 let is_on_plateforme player p_list =
   List.exists (check_plateforme player) p_list
 
@@ -81,6 +96,7 @@ let setup () =
   (* let player = create_personnage "eren" "../resources/red.png" 50. 50. 50. 800. in *)
   let player = create_personnage "eren" "../resources/player1.jpg" 200. 150. 50. 850. in
   let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in
+  (* let enemy = create_ennemi "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
   (* let background = Raylib.load_texture "../resources/fondmedievale.png" in *)
 
   let sprite_texture = Raylib.load_texture player.sprite in
@@ -124,13 +140,13 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
     let player = entities.player in
     let joueur = 
        (if !is_game_running then
-        let player = vel player (0., 1.) in
 
+        let player = vel player (0., 1.) in
         let player =
           match (is_key_down Key.Right, is_key_down Key.Left) with
           | true, false -> if fst player.vector_velocity < 8. then vel player (4.,0.) else player
           | false, true -> if fst player.vector_velocity > -8. then vel player (-4.,0.) else player
-          | _, _ -> if not player.is_jumping then vel player (-.(fst player.vector_velocity), 0.) else player
+          | _, _ -> if not player.airborn then vel player (-.(fst player.vector_velocity), 0.) else player
         in
         let player = if ((snd player.vector_velocity +. snd player.pos +. player.height) > float_of_int resolution_Y)
           then vel (jump player false) (0., -.(snd player.vector_velocity -. (float_of_int resolution_Y -. (snd player.pos +. player.height))))
@@ -151,7 +167,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities =
             in
           vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
           else grapin player false player.grap.pos in
-        let player = if is_key_down Key.Up && not player.is_jumping then vel (jump player true) (0., -20.)
+        let player = if is_key_down Key.Up && not player.airborn then vel (jump player true) (0., -20.)
         else player in
         let player = deplacer player in player else player)
       in {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}) in

@@ -20,6 +20,7 @@ plateforme_list : plateforme list
 
 val gameloop :  unit -> unit
 
+val check_plateforme : joueur -> plateforme -> bool
 
 (*
 val draw : joueur -> ennemi list -> unit

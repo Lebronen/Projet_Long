@@ -14,14 +14,13 @@
     pos : position;
     vector_velocity : float * float;
     health_point : int;
-    attack_point : int;
     jetpack_carburant_pourcentage : int;
     grap : grappin;
     sprite : string;
     height : float;
     width : float;
     facing_right : bool;
-    is_jumping : bool
+    airborn : bool
 }
 
 let create_personnage nom img h w px py = 
@@ -29,7 +28,6 @@ let create_personnage nom img h w px py =
   pos = (px, (py -. h));
   vector_velocity = (0.,0.);
   health_point = 100;
-  attack_point = 10;
   jetpack_carburant_pourcentage = 500;
   grap = {
     pos = (0. ,0.);
@@ -39,8 +37,8 @@ let create_personnage nom img h w px py =
   height = h;
   width = w;
   facing_right = true;
-  is_jumping = false}
-;;
+  airborn = false
+  }
 
 let deplacer player =
   {player with 
@@ -55,7 +53,7 @@ let deplacer player =
 
   let jump player b =
     { player with 
-    is_jumping = b;
+    airborn = b;
     }
   
   let grapin player b p =
