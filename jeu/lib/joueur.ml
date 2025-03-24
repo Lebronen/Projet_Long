@@ -20,12 +20,12 @@
     height : float;
     width : float;
     facing_right : bool;
-    airborn : bool
+    airborn : bool;
 }
 
 let create_personnage nom img h w px py = 
   {nom = nom;
-  pos = (px, (py -. h));
+  pos = (px, (py +. h));
   vector_velocity = (0.,0.);
   health_point = 100;
   jetpack_carburant_pourcentage = 500;
@@ -51,7 +51,7 @@ let deplacer player =
     vector_velocity = (fst v +. fst player.vector_velocity, snd v +. snd player.vector_velocity)
     }
 
-  let jump player b =
+  let airb player b =
     { player with 
     airborn = b;
     }

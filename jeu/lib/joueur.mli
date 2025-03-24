@@ -26,7 +26,7 @@ val deplacer : joueur -> joueur
 
 val vel : joueur -> float * float -> joueur
 
-val jump : joueur -> bool -> joueur
+val airb : joueur -> bool -> joueur
 
 val grapin : joueur -> bool -> position -> joueur
 
