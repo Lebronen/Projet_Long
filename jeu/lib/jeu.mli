@@ -15,18 +15,24 @@ type plateforme = {
 
 type entities = {
 player : joueur;
-ennemis : ennemi list;
+ennemis : ennemi;
 plateforme_list : plateforme list
 }
 
 
+type direction = Below | Left | Right
+
+
 val gameloop :  unit -> unit
 
-val check_plateforme : Joueur.joueur -> plateforme -> bool
+val check_plateforme : direction -> (float * float) -> (float * float) -> float -> float -> plateforme -> bool
 
-val is_on_plateforme : Joueur.joueur -> plateforme list -> bool
+val is_on_plateforme : direction -> joueur -> plateforme list -> bool
+val is_on_plateforme_ennemi : direction -> ennemi -> plateforme list -> bool
 
-val wich_plateforme : Joueur.joueur -> plateforme list -> plateforme list
+val wich_plateforme : direction -> joueur -> plateforme list -> plateforme list
+val wich_plateforme_ennemi : direction -> ennemi -> plateforme list -> plateforme list
+
 
 (*
 val draw : joueur -> ennemi list -> unit

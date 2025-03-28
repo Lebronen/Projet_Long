@@ -14,8 +14,12 @@ type ennemi = {
 }
 
 val create_ennemi : string -> string -> float -> float -> float -> float -> ennemi
+
+val vele : ennemi -> float * float -> ennemi
+
+val deplace : ennemi -> ennemi
+
 (*
-val deplacer : ennemi -> deplacement -> ennemi
 
 val create_personnage : string -> string -> ennemi
 

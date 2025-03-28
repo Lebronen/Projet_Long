@@ -18,7 +18,7 @@ type plateforme = {
 
 type entities = {
   player : joueur;
-  ennemis : ennemi list;
+  ennemis : ennemi;
   plateforme_list : plateforme list;
 }
 
@@ -62,7 +62,7 @@ let pendule x y x' y' vx vy =
     let vy' = py -. y in
     (vx', vy')      
 
-    let check_plateforme player plateform = 
+    (* let check_plateforme player plateform = 
       ((snd player.vector_velocity +. snd player.pos -. player.height) < float_of_int plateform.platform_y
         && (snd player.pos -. player.height) >= float_of_int plateform.platform_y
         && (fst player.pos +. player.width -. 25.) > float_of_int plateform.platform_x
@@ -97,8 +97,41 @@ let pendule x y x' y' vx vy =
     List.exists (check_plateforme_l player) p_list
 
     let wich_plateforme_l player p_list =
-    List.filter (check_plateforme_l player) p_list
+    List.filter (check_plateforme_l player) p_list *)
 
+    
+    type direction = Below | Left | Right
+
+    let check_plateforme direction pos vector_velocity height width plateform =
+      match direction with
+      | Below ->
+          (snd vector_velocity +. snd pos -. height) < float_of_int plateform.platform_y
+          && (snd pos -. height) >= float_of_int plateform.platform_y
+          && (fst pos +. width -. 15.) > float_of_int plateform.platform_x
+          && (fst pos +. 15.) < (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
+      | Right ->
+          (fst vector_velocity +. fst pos +. width) > float_of_int plateform.platform_x
+          && (fst pos +. width) <= float_of_int plateform.platform_x
+          && (snd pos -. height) < float_of_int plateform.platform_y
+          && (snd pos) > (float_of_int plateform.platform_y -. float_of_int plateform.platform_height)
+      | Left ->
+          (fst vector_velocity +. fst pos) < (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
+          && (fst pos) >= (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
+          && (snd pos -. height) < float_of_int plateform.platform_y
+          && (snd pos) > (float_of_int plateform.platform_y -. float_of_int plateform.platform_height)
+
+    let is_on_plateforme direction (player: joueur) p_list =
+      List.exists (check_plateforme direction player.pos player.vector_velocity player.height player.width) p_list
+
+    let is_on_plateforme_ennemi direction (enemy: ennemi) p_list =
+      List.exists (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list
+
+    let wich_plateforme direction (player: joueur) p_list =
+      List.filter (check_plateforme direction player.pos player.vector_velocity player.height player.width) p_list
+
+    let wich_plateforme_ennemi direction (enemy: ennemi) p_list =
+      List.filter (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list
+   
 
 let setup () =
   Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
@@ -107,7 +140,7 @@ let setup () =
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
   let player = create_personnage "eren" "../resources/spritesheetcourse.png" 100. 70. 200. 200. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
-  let enemy = create_ennemi "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in
+  let enemy = create_ennemi "ennemi" "../resources/blue.png" 100. 100. 1174. 650. in
 
 
   let sprite_texture = Raylib.load_texture player.sprite in
@@ -123,7 +156,7 @@ let setup () =
     | _ -> failwith "wrong json format")
     | _ -> failwith "wrong json format"
     ) in
-  let entities = { player; ennemis = [enemy]; plateforme_list = p_list } in
+  let entities = { player; ennemis = enemy; plateforme_list = p_list } in
   (menu_texture, sprite_texture, enemy_texture, entities)
 
 let start_time = ref (Raylib.get_time ())
@@ -148,6 +181,33 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
       if is_key_pressed Key.Enter then is_game_running := true;
     end;
     let entities = (
+    let ennemis = entities.ennemis in
+    let ennemi = 
+      (if !is_game_running then
+      let ennemis = vele ennemis (0., -1.) in
+      (* gestion des colisions avec le sol *)
+      let ennemis = if ((snd ennemis.vector_velocity +. snd ennemis.pos -. ennemis.height) < 0.)
+        then vele ennemis (0., -.(snd ennemis.vector_velocity +. (snd ennemis.pos -. ennemis.height)))
+        else ennemis
+      in
+      (* gestion des colisions avec les plateforme *)
+      let ennemis = if is_on_plateforme_ennemi Below ennemis entities.plateforme_list
+        then let p = List.nth (wich_plateforme_ennemi Below ennemis entities.plateforme_list) 0 in vele ennemis (0., -.(snd ennemis.vector_velocity -. (float_of_int p.platform_y -. (snd ennemis.pos -. ennemis.height))))
+        else ennemis
+      in
+      (* gestion colision droite *)
+      let ennemis = if is_on_plateforme_ennemi Right ennemis entities.plateforme_list
+        then let p = List.nth (wich_plateforme_ennemi Right ennemis entities.plateforme_list) 0 in vele ennemis (-.(fst ennemis.vector_velocity -. (float_of_int p.platform_x -. (fst ennemis.pos +. ennemis.width))), 0.)
+        else ennemis
+      in
+      (* gestion colision gauche *)
+      let ennemis = if is_on_plateforme_ennemi Left ennemis entities.plateforme_list
+        then let p = List.nth (wich_plateforme_ennemi Left ennemis entities.plateforme_list) 0 in vele ennemis (-.(fst ennemis.vector_velocity -. ((float_of_int p.platform_x +. float_of_int p.platform_width) -. (fst ennemis.pos))), 0.)
+        else ennemis
+      in
+      let ennemis = deplace ennemis in
+      ennemis
+    else ennemis) in
     let player = entities.player in
     let joueur = 
        (if !is_game_running then
@@ -166,18 +226,18 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
           else player
         in
         (* gestion des colisions avec les plateforme *)
-        let player = if is_on_plateforme player entities.plateforme_list && not player.grap.using
-          then let p = List.nth (wich_plateforme player entities.plateforme_list) 0 in vel (airb player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos -. player.height))))
+        let player = if is_on_plateforme Below player entities.plateforme_list && not player.grap.using
+          then let p = List.nth (wich_plateforme Below player entities.plateforme_list) 0 in vel (airb player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos -. player.height))))
           else player
         in
         (* gestion colision droite *)
-        let player = if is_on_plateforme_r player entities.plateforme_list && not player.grap.using
-          then let p = List.nth (wich_plateforme_r player entities.plateforme_list) 0 in vel player (-.(fst player.vector_velocity -. (float_of_int p.platform_x -. (fst player.pos +. player.width))), 0.)
+        let player = if is_on_plateforme Right player entities.plateforme_list
+          then let p = List.nth (wich_plateforme Right player entities.plateforme_list) 0 in vel player (-.(fst player.vector_velocity -. (float_of_int p.platform_x -. (fst player.pos +. player.width))), 0.)
           else player
         in
         (* gestion colision gauche *)
-        let player = if is_on_plateforme_l player entities.plateforme_list && not player.grap.using
-          then let p = List.nth (wich_plateforme_l player entities.plateforme_list) 0 in vel player (-.(fst player.vector_velocity -. ((float_of_int p.platform_x +. float_of_int p.platform_width) -. (fst player.pos))), 0.)
+        let player = if is_on_plateforme Left player entities.plateforme_list
+          then let p = List.nth (wich_plateforme Left player entities.plateforme_list) 0 in vel player (-.(fst player.vector_velocity -. ((float_of_int p.platform_x +. float_of_int p.platform_width) -. (fst player.pos))), 0.)
           else player
         in
         
@@ -198,7 +258,9 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         else player in
         (* mise a jours des positions *)
         let player = deplacer player in player else player) in
-        {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}
+
+
+        {player = joueur; ennemis = ennemi; plateforme_list = entities.plateforme_list}
       ) in
 
     
@@ -218,11 +280,11 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
           match player.vector_velocity with
           |(0.,_) -> 0.
           |_ -> match frame with
-                |_ when (frame/2)<5 -> 0.
-                |_ when (frame/2)<10 -> 35.
-                |_ when (frame/2)<15 -> 70.
-                |_ when (frame/2)<20 -> 105.
-                |_ when (frame/2)<25 -> 140.
+                |_ when frame<5 -> 0.
+                |_ when frame<10 -> 35.
+                |_ when frame<15 -> 70.
+                |_ when frame<20 -> 105.
+                |_ when frame<25 -> 140.
                 |_ -> 175.
       in
         let source_rect = Rectangle.create f 0. (if player.facing_right then (35.) else -. (35.)) (50.) in
@@ -232,8 +294,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         
         if (player.grap.using) then draw_line (int_of_float(fst player.pos +. (player.width /. 2.))) (resolution_Y - int_of_float(snd player.pos)) (int_of_float(fst player.grap.pos)) (resolution_Y - int_of_float(snd player.grap.pos)) Color.black; 
 
-        let enemy = List.hd entities.ennemis in
-        let enemy_dest_rect = Rectangle.create (1000.) (550.) (enemy.width) (enemy.height) in
+        let enemy = entities.ennemis in
+        let enemy_dest_rect = Rectangle.create (fst enemy.pos) (float_of_int(resolution_Y) -. (snd enemy.pos)) (enemy.width) (enemy.height) in
         draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white;
         
         draw_rectangle 50 50 (3*player.health_point) 20 Color.green;
@@ -247,7 +309,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
       end_drawing (); 
     in
     draw_game entities;
-    loop menu_texture sprite_texture enemy_texture entities (if (frame>30) then 0 else (frame+1))
+    loop menu_texture sprite_texture enemy_texture entities (if (frame==30) then 0 else (frame+1))
 
 let gameloop () =
   let menu_texture, sprite_texture, enemy_texture, entities = setup () in
