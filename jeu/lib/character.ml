@@ -49,17 +49,18 @@ let create_character (x, y) sprite height width : character =
     facing_right = true;
     airborn = false }
 
-(* Met à jour la vélocité *)
-let vel : unit t =
-  modify (fun c ->
-    let (vx, vy) = c.vector_velocity in
-    { c with pos = (fst c.pos +. vx, snd c.pos +. vy) })
+(* mise à jour de la vélocité *)
+let vel (x : float) (y : float) : unit t =
+  modify (fun c -> { c with vector_velocity = (fst c.vector_velocity +. x, snd c.vector_velocity +. y) })
 
 (* Déplace le personnage *)
 let deplacer : unit t =
   let* c = get in
   let new_pos = (fst c.pos +. fst c.vector_velocity, snd c.pos +. snd c.vector_velocity) in
-  modify (fun c -> { c with pos = new_pos })
+  let new_facing_right = if fst c.vector_velocity > 0. then true 
+    else if fst c.vector_velocity < 0. then false 
+      else c.facing_right in
+  modify (fun c -> { c with pos = new_pos; facing_right = new_facing_right })
 
 (* Met à jour l'état "airborn" *)
 let airb (is_airborn : bool) : unit t =
