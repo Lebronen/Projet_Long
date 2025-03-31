@@ -1,1 +1,1 @@
-lib/joueur.ml: Character
+lib/joueur.ml: Character CharacterM

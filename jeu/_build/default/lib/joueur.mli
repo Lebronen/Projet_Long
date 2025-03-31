@@ -12,6 +12,15 @@ type grappin = {
   }
 
 
+val create_personnage : float * float -> string -> float -> float -> t
+
+val vel : float -> float -> unit CharacterM.CharacterMonad.t
+
+val deplacer : unit CharacterM.CharacterMonad.t
+
+val airb : bool -> unit CharacterM.CharacterMonad.t
+
+
 (*
 
 val use_grappin : joueur -> deplacement -> joueur

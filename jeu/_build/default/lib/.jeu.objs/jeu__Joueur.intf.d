@@ -1,1 +1,1 @@
-lib/joueur.mli: Character
+lib/joueur.mli: Character CharacterM

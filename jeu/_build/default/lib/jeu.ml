@@ -1,7 +1,6 @@
 open Yojson
 open Ennemi
 open Joueur
-open Character
 
 
 
@@ -140,12 +139,12 @@ let setup () =
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
-  let player = create_personnage "eren" "../resources/spritesheetcourse.png" 100. 70. 200. 200. in
+  let player = create_personnage (200. , 200.) "../resources/spritesheetcourse.png" 100. 70. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
   let enemy = create_ennemi "ennemi" "../resources/blue.png" 100. 100. 1174. 650. in
 
 
-  let sprite_texture = Raylib.load_texture player.sprite in
+  let sprite_texture = Raylib.load_texture player.character.sprite in
   let enemy_texture = Raylib.load_texture enemy.sprite in
 
   let parsed_list = parse_json "../resources/level.json" in
