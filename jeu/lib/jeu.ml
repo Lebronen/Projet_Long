@@ -3,6 +3,7 @@ open Ennemi
 open Joueur
 
 
+
 type settings = {
   starttime : float;
   isstartvisible : bool;
@@ -17,7 +18,7 @@ type plateforme = {
 }
 
 type entities = {
-  player : joueur;
+  player : Joueur.t;
   ennemis : ennemi;
   plateforme_list : plateforme list;
 }
@@ -120,14 +121,14 @@ let pendule x y x' y' vx vy =
           && (snd pos -. height) < float_of_int plateform.platform_y
           && (snd pos) > (float_of_int plateform.platform_y -. float_of_int plateform.platform_height)
 
-    let is_on_plateforme direction (player: joueur) p_list =
-      List.exists (check_plateforme direction player.pos player.vector_velocity player.height player.width) p_list
+    let is_on_plateforme direction (player: Joueur.t) p_list =
+      List.exists (check_plateforme direction player.character.pos player.character.vector_velocity player.character.height player.character.width) p_list
 
     let is_on_plateforme_ennemi direction (enemy: ennemi) p_list =
       List.exists (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list
 
-    let wich_plateforme direction (player: joueur) p_list =
-      List.filter (check_plateforme direction player.pos player.vector_velocity player.height player.width) p_list
+    let wich_plateforme direction (player: Joueur.t) p_list =
+      List.filter (check_plateforme direction player.character.pos player.character.vector_velocity player.character.height player.character.width) p_list
 
     let wich_plateforme_ennemi direction (enemy: ennemi) p_list =
       List.filter (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list
@@ -218,7 +219,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
           match (is_key_down Key.Right, is_key_down Key.Left) with
           | true, false -> if fst player.vector_velocity < 8. then vel player (4.,0.) else player
           | false, true -> if fst player.vector_velocity > -8. then vel player (-4.,0.) else player
-          | _, _ -> if not player.airborn then vel player (-.(fst player.vector_velocity), 0.) else player
+          | _, _ -> if not player.character.airborn then vel player (-.(fst player.vector_velocity), 0.) else player
         in
         (* gestion des colisions avec le sol *)
         let player = if ((snd player.vector_velocity +. snd player.pos -. player.height) < 0.)
@@ -277,7 +278,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         let player = entities.player in
         
         let f = 
-          match player.vector_velocity with
+          match player.character.vector_velocity with
           |(0.,_) -> 0.
           |_ -> match frame with
                 |_ when frame<5 -> 0.
@@ -287,12 +288,12 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
                 |_ when frame<25 -> 140.
                 |_ -> 175.
       in
-        let source_rect = Rectangle.create f 0. (if player.facing_right then (35.) else -. (35.)) (50.) in
-        let dest_rect = Rectangle.create (fst player.pos) (float_of_int(resolution_Y) -. (snd player.pos)) (player.width) (player.height) in 
+        let source_rect = Rectangle.create f 0. (if player.character.facing_right then (35.) else -. (35.)) (50.) in
+        let dest_rect = Rectangle.create (fst player.character.pos) (float_of_int(resolution_Y) -. (snd player.character.pos)) (player.character.width) (player.character.height) in 
         let origin = Vector2.create 0. 0. in
         draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;
         
-        if (player.grap.using) then draw_line (int_of_float(fst player.pos +. (player.width /. 2.))) (resolution_Y - int_of_float(snd player.pos)) (int_of_float(fst player.grap.pos)) (resolution_Y - int_of_float(snd player.grap.pos)) Color.black; 
+        if (player.grap.using) then draw_line (int_of_float(fst player.character.pos +. (player.character.width /. 2.))) (resolution_Y - int_of_float(snd player.character.pos)) (int_of_float(fst player.grap.pos)) (resolution_Y - int_of_float(snd player.grap.pos)) Color.black; 
 
         let enemy = entities.ennemis in
         let enemy_dest_rect = Rectangle.create (fst enemy.pos) (float_of_int(resolution_Y) -. (snd enemy.pos)) (enemy.width) (enemy.height) in

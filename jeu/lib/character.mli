@@ -1,7 +1,7 @@
 
 type position = float * float
 
-type character = {
+ type t =  {
   pos : position;
   vector_velocity : float * float;
   sprite : string;
@@ -10,11 +10,3 @@ type character = {
   facing_right : bool;
   airborn : bool;
 }
-
-val create_character : float * float -> string -> float -> float -> character
-
-val vel : character -> character
-
-val deplacer : character -> character
-
-val airb : character -> bool -> character
