@@ -1,26 +1,26 @@
-type deplacement =
-  | HAUT
-  | BAS
-  | GAUCHE
-  | DROITE
-
-type position = int *int
+type position = float * float
 
 type hitbox = position * position * position * position
 
 type ennemi = {
     nom : string;
-    health_point : int;
-    attack_point : int;
     pos : position;
-    sprite_img_name : string
+    vector_velocity : float * float;
+    health_point : int;
+    sprite : string;
+    height : float;
+    width : float;
+    facing_right : bool;
 }
-(*
-val deplacer : ennemi -> deplacement -> ennemi
 
-val drawme : ennemi -> unit
+val create_ennemi : string -> string -> float -> float -> float -> float -> ennemi
+
+val vele : ennemi -> float * float -> ennemi
+
+val deplace : ennemi -> ennemi
+
+(*
 
 val create_personnage : string -> string -> ennemi
 
-val attack : ennemi -> hitbox
 *)

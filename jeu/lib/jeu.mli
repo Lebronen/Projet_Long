@@ -1,4 +1,6 @@
 open Joueur
+open Ennemi
+
 type settings = {
   starttime : float;
   isstartvisible : bool;
@@ -13,12 +15,23 @@ type plateforme = {
 
 type entities = {
 player : joueur;
-ennemis : joueur list;
+ennemis : ennemi;
 plateforme_list : plateforme list
 }
 
 
+type direction = Below | Left | Right
+
+
 val gameloop :  unit -> unit
+
+val check_plateforme : direction -> (float * float) -> (float * float) -> float -> float -> plateforme -> bool
+
+val is_on_plateforme : direction -> joueur -> plateforme list -> bool
+val is_on_plateforme_ennemi : direction -> ennemi -> plateforme list -> bool
+
+val wich_plateforme : direction -> joueur -> plateforme list -> plateforme list
+val wich_plateforme_ennemi : direction -> ennemi -> plateforme list -> plateforme list
 
 
 (*
