@@ -8,18 +8,15 @@ type grappin = {
     character : Character.t;
     grap : grappin;
     jetpack_carburant_pourcentage : int;
-    health_point : int
+    health_point : int;
+    vel : float -> float -> unit CharacterM.CharacterMonad.t;
+    deplacer : unit CharacterM.CharacterMonad.t;
+    airb : bool -> unit CharacterM.CharacterMonad.t
+
   }
 
 
 val create_personnage : float * float -> string -> float -> float -> t
-
-val vel : float -> float -> unit CharacterM.CharacterMonad.t
-
-val deplacer : unit CharacterM.CharacterMonad.t
-
-val airb : bool -> unit CharacterM.CharacterMonad.t
-
 
 (*
 

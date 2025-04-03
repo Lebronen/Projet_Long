@@ -213,7 +213,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
     let joueur = 
        (if !is_game_running then
         (* gravité *)
-        let player = vel player (0., -1.) in
+        let player = player.vel (0.) (-1.) in
         (* déplacement latéral *)
         let player =
           match (is_key_down Key.Right, is_key_down Key.Left) with
