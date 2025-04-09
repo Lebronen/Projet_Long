@@ -1,6 +1,7 @@
 # cotrez-shay-plong-2024
 
 Au préalable il faut avoir les librairies raylib et yojson installé.
+
 Le programme se compile en executant "dune build" dans le repertoire "jeu" du projet.
 Une fois compilé il suffit d'executer "dune exec jeu" pour lancer le jeu.
 
