@@ -39,9 +39,27 @@ Todo
 [ ] Détailer dans le fichier `README.md` quelle commande
 	- compile le code
 	- execute le jeu
-[ ] Déplacement des ennemis
 [ ] Niveaux en fichiers texte (avec éléments au delà de ce que le moteur gère déjà -> chaque niveau prédéfini sert de jalon de fonctionnalités à implémenter). Gagnez du temps en utilisant un format déjà géré par une bibliothèque existante (JSON ? YAML ? autre ?)
+[ ] Déplacement des ennemis
 [ ] collisions
 [ ] défilement
 [ ] ...
 
+# 09/04/2025 Aubian
+
+DONE
+
+[~] Détailer dans le fichier `README.md` quelle commande
+	- compile le code
+	- execute le jeu
+[X] Niveaux en fichiers texte (avec éléments au delà de ce que le moteur gère déjà -> chaque niveau prédéfini sert de jalon de fonctionnalités à implémenter). Gagnez du temps en utilisant un format déjà géré par une bibliothèque existante (JSON ? YAML ? autre ?)
+
+
+TODO
+
+[ ] Rajouter une façon de décrire les différents types de plateforme
+[ ] Implémenter le changement de scènes
+[ ] Déplacement des ennemis
+[ ] collisions
+[ ] défilement
+[ ] ...
