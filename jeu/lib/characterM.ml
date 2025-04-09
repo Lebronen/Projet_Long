@@ -5,7 +5,7 @@ end
 module CharacterMonad = struct
   type 'a t = Character.t -> 'a * Character.t
 
-  (* let return (x : 'a) : 'a t = fun c -> (x, c) *)
+   (* let return (x : 'a) : 'a t = fun c -> (x, c) *)
 
   let bind (m : 'a t) (f : 'a -> 'b t) : 'b t =
     fun c ->

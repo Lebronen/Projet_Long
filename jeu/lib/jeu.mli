@@ -15,7 +15,7 @@ type plateforme = {
 
 type entities = {
 player : Joueur.t;
-ennemis : ennemi;
+(* ennemis : ennemi; *)
 plateforme_list : plateforme list
 }
 
