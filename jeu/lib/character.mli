@@ -1,8 +1,6 @@
 
-type position = float * float
-
  type t =  {
-  pos : position;
+  pos : float * float;
   vector_velocity : float * float;
   sprite : string;
   height : float;

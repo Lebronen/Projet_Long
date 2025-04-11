@@ -1,7 +1,7 @@
 open Yojson
 open Ennemi
 open Joueur
-
+open JoueurMonad
 
 
 type settings = {
@@ -40,7 +40,8 @@ let parse_json file =
 let resolution_X = 1600
 let resolution_Y = 900 
 
-let pendule x y x' y' vx vy =
+(* 
+  let pendule x y x' y' vx vy =
   let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
   (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
   let ax = x +. vx in
@@ -61,46 +62,9 @@ let pendule x y x' y' vx vy =
     (* Étape 3 : Calcul du vecteur (vx', vy') de (x, y) vers (px, py) *)
     let vx' = px -. x in
     let vy' = py -. y in
-    (vx', vy')      
+    (vx', vy')       
+*)
 
-    (* let check_plateforme player plateform = 
-      ((snd player.vector_velocity +. snd player.pos -. player.height) < float_of_int plateform.platform_y
-        && (snd player.pos -. player.height) >= float_of_int plateform.platform_y
-        && (fst player.pos +. player.width -. 25.) > float_of_int plateform.platform_x
-        && (fst player.pos +. 25.) < (float_of_int plateform.platform_x +. float_of_int plateform.platform_width))
-
-    let is_on_plateforme player p_list =
-      List.exists (check_plateforme player) p_list
-
-    let wich_plateforme player p_list =
-      List.filter (check_plateforme player) p_list
-
-
-    let check_plateforme_r player plateform =
-      ((fst player.vector_velocity +. fst player.pos +. player.width) > float_of_int plateform.platform_x
-        && (fst player.pos +. player.width) <= float_of_int plateform.platform_x
-        && (snd player.pos -. player.height) < float_of_int plateform.platform_y
-        && (snd player.pos) > (float_of_int plateform.platform_y -. float_of_int plateform.platform_height))
-
-    let is_on_plateforme_r player p_list =
-    List.exists (check_plateforme_r player) p_list
-
-    let wich_plateforme_r player p_list =
-    List.filter (check_plateforme_r player) p_list
-
-    let check_plateforme_l player plateform =
-      ((fst player.vector_velocity +. fst player.pos) < ((float_of_int plateform.platform_x) +. (float_of_int plateform.platform_width))
-        && (fst player.pos) >= (float_of_int plateform.platform_x +. (float_of_int plateform.platform_width))
-        && (snd player.pos -. player.height) < float_of_int plateform.platform_y
-        && (snd player.pos) > (float_of_int plateform.platform_y -. float_of_int plateform.platform_height))
-
-    let is_on_plateforme_l player p_list =
-    List.exists (check_plateforme_l player) p_list
-
-    let wich_plateforme_l player p_list =
-    List.filter (check_plateforme_l player) p_list *)
-
-    
     type direction = Below | Left | Right
 
     let check_plateforme direction pos vector_velocity height width plateform =
@@ -124,14 +88,14 @@ let pendule x y x' y' vx vy =
     let is_on_plateforme direction (player: Joueur.t) p_list =
       List.exists (check_plateforme direction player.character.pos player.character.vector_velocity player.character.height player.character.width) p_list
 
-    let is_on_plateforme_ennemi direction (enemy: ennemi) p_list =
-      List.exists (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list
+    (* let is_on_plateforme_ennemi direction (enemy: ennemi) p_list =
+      List.exists (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list *)
 
     let wich_plateforme direction (player: Joueur.t) p_list =
       List.filter (check_plateforme direction player.character.pos player.character.vector_velocity player.character.height player.character.width) p_list
 
-    let wich_plateforme_ennemi direction (enemy: ennemi) p_list =
-      List.filter (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list
+    (* let wich_plateforme_ennemi direction (enemy: ennemi) p_list =
+      List.filter (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list *)
    
 
 let setup () =
@@ -139,13 +103,13 @@ let setup () =
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
-  let player = create_personnage (200. , 200.) "../resources/spritesheetcourse.png" 100. 70. in
+  let player = create_personnage (200. , 350.) "../resources/spritesheetcourse.png" 100. 70. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
-  let enemy = create_ennemi "ennemi" "../resources/blue.png" 100. 100. 1174. 650. in
+  let enemy = create_ennemi "../resources/blue.png" 100. 100. 1174. 650. in
 
 
   let sprite_texture = Raylib.load_texture player.character.sprite in
-  let enemy_texture = Raylib.load_texture enemy.sprite in
+  let enemy_texture = Raylib.load_texture enemy.character.sprite in
 
   let parsed_list = parse_json "../resources/level.json" in
 
@@ -181,67 +145,105 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
       end;
       if is_key_pressed Key.Enter then is_game_running := true;
     end;
-    let entities = (
-    let ennemis = entities.ennemis in
-    let ennemi = 
-      (if !is_game_running then
-      let ennemis = vele ennemis (0., -1.) in
-      (* gestion des colisions avec le sol *)
-      let ennemis = if ((snd ennemis.vector_velocity +. snd ennemis.pos -. ennemis.height) < 0.)
-        then vele ennemis (0., -.(snd ennemis.vector_velocity +. (snd ennemis.pos -. ennemis.height)))
-        else ennemis
-      in
-      (* gestion des colisions avec les plateforme *)
-      let ennemis = if is_on_plateforme_ennemi Below ennemis entities.plateforme_list
-        then let p = List.nth (wich_plateforme_ennemi Below ennemis entities.plateforme_list) 0 in vele ennemis (0., -.(snd ennemis.vector_velocity -. (float_of_int p.platform_y -. (snd ennemis.pos -. ennemis.height))))
-        else ennemis
-      in
-      (* gestion colision droite *)
-      let ennemis = if is_on_plateforme_ennemi Right ennemis entities.plateforme_list
-        then let p = List.nth (wich_plateforme_ennemi Right ennemis entities.plateforme_list) 0 in vele ennemis (-.(fst ennemis.vector_velocity -. (float_of_int p.platform_x -. (fst ennemis.pos +. ennemis.width))), 0.)
-        else ennemis
-      in
-      (* gestion colision gauche *)
-      let ennemis = if is_on_plateforme_ennemi Left ennemis entities.plateforme_list
-        then let p = List.nth (wich_plateforme_ennemi Left ennemis entities.plateforme_list) 0 in vele ennemis (-.(fst ennemis.vector_velocity -. ((float_of_int p.platform_x +. float_of_int p.platform_width) -. (fst ennemis.pos))), 0.)
-        else ennemis
-      in
-      let ennemis = deplace ennemis in
-      ennemis
-    else ennemis) in
-    let player = entities.player in
-    let joueur = 
-       (if !is_game_running then
-        (* gravité *)
-        let player = player.vel (0.) (-1.) in
-        (* déplacement latéral *)
-        let player =
-          match (is_key_down Key.Right, is_key_down Key.Left) with
-          | true, false -> if fst player.vector_velocity < 8. then vel player (4.,0.) else player
-          | false, true -> if fst player.vector_velocity > -8. then vel player (-4.,0.) else player
-          | _, _ -> if not player.character.airborn then vel player (-.(fst player.vector_velocity), 0.) else player
-        in
-        (* gestion des colisions avec le sol *)
-        let player = if ((snd player.vector_velocity +. snd player.pos -. player.height) < 0.)
-          then vel (airb player false) (0., -.(snd player.vector_velocity +. (snd player.pos -. player.height)))
-          else player
-        in
-        (* gestion des colisions avec les plateforme *)
-        let player = if is_on_plateforme Below player entities.plateforme_list && not player.grap.using
-          then let p = List.nth (wich_plateforme Below player entities.plateforme_list) 0 in vel (airb player false) (0., -.(snd player.vector_velocity -. (float_of_int p.platform_y -. (snd player.pos -. player.height))))
-          else player
-        in
-        (* gestion colision droite *)
-        let player = if is_on_plateforme Right player entities.plateforme_list
-          then let p = List.nth (wich_plateforme Right player entities.plateforme_list) 0 in vel player (-.(fst player.vector_velocity -. (float_of_int p.platform_x -. (fst player.pos +. player.width))), 0.)
-          else player
-        in
-        (* gestion colision gauche *)
-        let player = if is_on_plateforme Left player entities.plateforme_list
-          then let p = List.nth (wich_plateforme Left player entities.plateforme_list) 0 in vel player (-.(fst player.vector_velocity -. ((float_of_int p.platform_x +. float_of_int p.platform_width) -. (fst player.pos))), 0.)
-          else player
-        in
+    let entities = if !is_game_running then (
+    let joueur = entities.player in
+       (* (if !is_game_running then
+        let player = player in player else player) in *)
+        let programme =
+          (* déplacement latéral *)
+          let* () =
+            match (is_key_down Key.Right, is_key_down Key.Left) with
+            | true, false ->
+                let* joueur = get in
+                if fst joueur.character.vector_velocity < 8.0 then
+                  add_vector_velocity (8.0, 0.0)
+                else
+                  return ()
+            | false, true ->
+                let* joueur = get in
+                if fst joueur.character.vector_velocity > -8.0 then
+                  add_vector_velocity (-8.0, 0.0)
+                else
+                  return ()
+            | _, _ ->
+                let* joueur = get in
+                if not joueur.character.airborn then
+                  add_vector_velocity (-. (fst joueur.character.vector_velocity), 0.0)
+                else
+                  return ()
+          in
         
+          (* Gravité *)
+          let* () = add_vector_velocity (0.0,-1.)
+        in
+
+          (* Collision avec le sol*)
+          let* joueur = get in
+          let y = snd joueur.character.vector_velocity +. snd joueur.character.pos -. joueur.character.height in
+          let* () =
+            if y < 0. then (
+              let vy = snd joueur.character.vector_velocity +. snd joueur.character.pos -. joueur.character.height in
+              let* () = add_vector_velocity (0., -.vy) in
+              airb false
+            ) else return ()
+          in
+
+          (* Collision avec plateformes en dessous *)
+          let* joueur = get in
+          let* () =
+            if is_on_plateforme Below joueur entities.plateforme_list && not joueur.grap.using then
+              let p = List.nth (wich_plateforme Below joueur entities.plateforme_list) 0 in
+              let vy = snd joueur.character.vector_velocity -. (float_of_int p.platform_y -. (snd joueur.character.pos -. joueur.character.height)) in
+              let* () = add_vector_velocity (0., -.vy) in
+              airb false
+            else return ()
+          in
+
+          (* Collision droite *)
+          let* joueur = get in
+          let* () =
+            if is_on_plateforme Right joueur entities.plateforme_list then
+              let p = List.nth (wich_plateforme Right joueur entities.plateforme_list) 0 in
+              let vx = fst joueur.character.vector_velocity -. (float_of_int p.platform_x -. (fst joueur.character.pos +. joueur.character.width)) in
+              add_vector_velocity (-.vx, 0.)
+            else return ()
+          in
+
+          (* Collision gauche *)
+          let* joueur = get in
+          let* () =
+            if is_on_plateforme Left joueur entities.plateforme_list then
+              let p = List.nth (wich_plateforme Left joueur entities.plateforme_list) 0 in
+              let vx = fst joueur.character.vector_velocity -. ((float_of_int p.platform_x +. float_of_int p.platform_width) -. fst joueur.character.pos) in
+              add_vector_velocity (-.vx, 0.)
+            else return ()
+          in
+
+          (* Grappin *)
+          (* à rajouter *)
+
+          (* Saut *)
+          let* joueur = get in
+          let* () =
+          if is_key_down Key.Up && not joueur.character.airborn then (
+            let* () = add_vector_velocity (0., 20.) in
+            airb true 
+          ) else
+            return ()
+        in
+
+          (* 3. Déplacement *)
+          let* joueur = get in
+          let* () = deplacement
+            (fst joueur.character.pos +. fst joueur.character.vector_velocity,
+             snd joueur.character.pos +. snd joueur.character.vector_velocity)
+          in
+          return ()
+          
+        in
+        let (_, joueur) = programme joueur in
+
+      (*       
         (* gestion du grappin *)
         let player = if is_key_down Key.Space then
           let (vx', vy') = pendule (fst player.pos +. (player.width /. 2.)) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
@@ -258,11 +260,12 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         let player = if is_key_down Key.Up && not player.airborn then vel (airb player true) (0., 20.)
         else player in
         (* mise a jours des positions *)
-        let player = deplacer player in player else player) in
+        let player = deplacer player in player else player) in 
+      *)
 
-
-        {player = joueur; ennemis = ennemi; plateforme_list = entities.plateforme_list}
-      ) in
+        {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}
+      ) 
+      else entities in
 
     
     let draw_game entities = 
@@ -296,7 +299,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         if (player.grap.using) then draw_line (int_of_float(fst player.character.pos +. (player.character.width /. 2.))) (resolution_Y - int_of_float(snd player.character.pos)) (int_of_float(fst player.grap.pos)) (resolution_Y - int_of_float(snd player.grap.pos)) Color.black; 
 
         let enemy = entities.ennemis in
-        let enemy_dest_rect = Rectangle.create (fst enemy.pos) (float_of_int(resolution_Y) -. (snd enemy.pos)) (enemy.width) (enemy.height) in
+        let enemy_dest_rect = Rectangle.create (fst enemy.character.pos) (float_of_int(resolution_Y) -. (snd enemy.character.pos)) (enemy.character.width) (enemy.character.height) in
         draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white;
         
         draw_rectangle 50 50 (3*player.health_point) 20 Color.green;
