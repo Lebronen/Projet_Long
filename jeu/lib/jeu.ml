@@ -195,6 +195,40 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
             else return ()
           in
 
+          (* Grappin *)
+          let* joueur = get in
+          let* () =
+            if is_key_down Key.Space then
+              let (vx', vy') = pendule 
+                (fst joueur.character.pos +. (joueur.character.width /. 2.)) 
+                (snd joueur.character.pos) 
+                (fst joueur.grap.pos) 
+                (snd joueur.grap.pos) 
+                (fst joueur.character.vector_velocity) 
+                (snd joueur.character.vector_velocity)
+              in
+              let* () =
+                if joueur.grap.using then
+                  let* () = airb true in
+                  return () (* Continue si le grappin est déjà utilisé *)
+                else
+                  let* () =
+                    if joueur.character.facing_right then
+                      let* () = airb true in
+                      set_grappin true (fst joueur.character.pos +. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+                    else
+                      let* () = airb true in
+                      set_grappin true (fst joueur.character.pos -. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+                  in
+                  return () (* Grappin activé et position mis à jour *)
+              in
+              let* () = add_vector_velocity (-.fst joueur.character.vector_velocity +. vx', -.snd joueur.character.vector_velocity +. vy') in
+              return () (* Vitesse mise à jour *)
+            else
+              let* () = set_grappin false (0.0, 0.0) in
+              return () (* Si la touche Space n'est pas pressée, désactiver le grappin et réinitialiser la position *)
+          in
+
           (* Collision droite *)
           let* joueur = get in
           let* () =
@@ -214,61 +248,6 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
               add_vector_velocity (-.vx, 0.)
             else return ()
           in
-
-          (* Grappin *)
-          (* 
-          let* joueur = get in
-            let* () = if is_key_down Key.Space then
-              let (vx', vy') = pendule 
-              (fst joueur.character.pos +. (joueur.character.width /. 2.)) (snd joueur.character.pos) 
-              (fst joueur.grap.pos) (snd joueur.grap.pos) 
-              (fst joueur.character.vector_velocity) (snd joueur.character.vector_velocity)
-            in
-            if joueur.grap.using then let* () = airb true in return ()
-            else if joueur.character.facing_right 
-              then 
-                let* () = airb true in
-                set_grappin true (fst joueur.character.pos +. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
-              else 
-                let* () = airb true in
-                set_grappin true (fst joueur.character.pos -. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
-            let* () = add_vector_velocity(-.fst joueur.character.vector_velocity +. vx',-.snd joueur.character.vector_velocity +. vy')
-            in return ()
-            else let* () = set_grappin false (0.0,0.0) in return ()
-          in 
-           *)
-           let* joueur = get in
-           let* () =
-             if is_key_down Key.Space then
-               let (vx', vy') = pendule 
-                 (fst joueur.character.pos +. (joueur.character.width /. 2.)) 
-                 (snd joueur.character.pos) 
-                 (fst joueur.grap.pos) 
-                 (snd joueur.grap.pos) 
-                 (fst joueur.character.vector_velocity) 
-                 (snd joueur.character.vector_velocity)
-               in
-               let* () =
-                 if joueur.grap.using then
-                   let* () = airb true in
-                   return () (* Continue si le grappin est déjà utilisé *)
-                 else
-                   let* () =
-                     if joueur.character.facing_right then
-                       let* () = airb true in
-                       set_grappin true (fst joueur.character.pos +. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
-                     else
-                       let* () = airb true in
-                       set_grappin true (fst joueur.character.pos -. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
-                   in
-                   return () (* Grappin activé et position mis à jour *)
-               in
-               let* () = add_vector_velocity (-.fst joueur.character.vector_velocity +. vx', -.snd joueur.character.vector_velocity +. vy') in
-               return () (* Vitesse mise à jour *)
-             else
-               let* () = set_grappin false (0.0, 0.0) in
-               return () (* Si la touche Space n'est pas pressée, désactiver le grappin et réinitialiser la position *)
-           in
           
           (* Saut *)
           let* joueur = get in
@@ -308,6 +287,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         (* affichage du joueur *)
         let player = entities.player in
         let f = 
+          if player.grap.using then 0.
+          else
           match player.character.vector_velocity with
           |(0.,_) -> 0.
           |_ -> match frame with
