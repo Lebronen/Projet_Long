@@ -40,7 +40,6 @@ let parse_json file =
 let resolution_X = 1600
 let resolution_Y = 900 
 
-(* 
   let pendule x y x' y' vx vy =
   let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
   (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
@@ -63,7 +62,6 @@ let resolution_Y = 900
     let vx' = px -. x in
     let vy' = py -. y in
     (vx', vy')       
-*)
 
     type direction = Below | Left | Right
 
@@ -147,9 +145,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
     end;
     let entities = if !is_game_running then (
     let joueur = entities.player in
-       (* (if !is_game_running then
-        let player = player in player else player) in *)
-        let programme =
+        let actionjoueur =
           (* déplacement latéral *)
           let* () =
             match (is_key_down Key.Right, is_key_down Key.Left) with
@@ -220,49 +216,80 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
           in
 
           (* Grappin *)
-          (* à rajouter *)
-
+          (* 
+          let* joueur = get in
+            let* () = if is_key_down Key.Space then
+              let (vx', vy') = pendule 
+              (fst joueur.character.pos +. (joueur.character.width /. 2.)) (snd joueur.character.pos) 
+              (fst joueur.grap.pos) (snd joueur.grap.pos) 
+              (fst joueur.character.vector_velocity) (snd joueur.character.vector_velocity)
+            in
+            if joueur.grap.using then let* () = airb true in return ()
+            else if joueur.character.facing_right 
+              then 
+                let* () = airb true in
+                set_grappin true (fst joueur.character.pos +. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+              else 
+                let* () = airb true in
+                set_grappin true (fst joueur.character.pos -. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+            let* () = add_vector_velocity(-.fst joueur.character.vector_velocity +. vx',-.snd joueur.character.vector_velocity +. vy')
+            in return ()
+            else let* () = set_grappin false (0.0,0.0) in return ()
+          in 
+           *)
+           let* joueur = get in
+           let* () =
+             if is_key_down Key.Space then
+               let (vx', vy') = pendule 
+                 (fst joueur.character.pos +. (joueur.character.width /. 2.)) 
+                 (snd joueur.character.pos) 
+                 (fst joueur.grap.pos) 
+                 (snd joueur.grap.pos) 
+                 (fst joueur.character.vector_velocity) 
+                 (snd joueur.character.vector_velocity)
+               in
+               let* () =
+                 if joueur.grap.using then
+                   let* () = airb true in
+                   return () (* Continue si le grappin est déjà utilisé *)
+                 else
+                   let* () =
+                     if joueur.character.facing_right then
+                       let* () = airb true in
+                       set_grappin true (fst joueur.character.pos +. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+                     else
+                       let* () = airb true in
+                       set_grappin true (fst joueur.character.pos -. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+                   in
+                   return () (* Grappin activé et position mis à jour *)
+               in
+               let* () = add_vector_velocity (-.fst joueur.character.vector_velocity +. vx', -.snd joueur.character.vector_velocity +. vy') in
+               return () (* Vitesse mise à jour *)
+             else
+               let* () = set_grappin false (0.0, 0.0) in
+               return () (* Si la touche Space n'est pas pressée, désactiver le grappin et réinitialiser la position *)
+           in
+          
           (* Saut *)
           let* joueur = get in
-          let* () =
-          if is_key_down Key.Up && not joueur.character.airborn then (
-            let* () = add_vector_velocity (0., 20.) in
-            airb true 
-          ) else
-            return ()
-        in
+            let* () =
+            if is_key_down Key.Up && not joueur.character.airborn then (
+              let* () = add_vector_velocity (0., 20.) in
+              airb true 
+            ) else
+              return ()
+          in
 
-          (* 3. Déplacement *)
+          (* Déplacement *)
           let* joueur = get in
-          let* () = deplacement
-            (fst joueur.character.pos +. fst joueur.character.vector_velocity,
-             snd joueur.character.pos +. snd joueur.character.vector_velocity)
+            let* () = deplacement
+              (fst joueur.character.pos +. fst joueur.character.vector_velocity,
+              snd joueur.character.pos +. snd joueur.character.vector_velocity)
+            in
+            return ()
           in
-          return ()
-          
-        in
-        let (_, joueur) = programme joueur in
 
-      (*       
-        (* gestion du grappin *)
-        let player = if is_key_down Key.Space then
-          let (vx', vy') = pendule (fst player.pos +. (player.width /. 2.)) (snd player.pos) (fst player.grap.pos) (snd player.grap.pos) (fst player.vector_velocity) (snd player.vector_velocity)
-          in
-          let player = 
-            if player.grap.using then (airb player true)
-            else if player.facing_right 
-              then grapin (airb player true) true (fst player.pos +. 250. +. (player.width /. 2.), snd player.pos +. 150.)
-              else grapin (airb player true) true (fst player.pos -. 250. +. (player.width /. 2.), snd player.pos +. 150.)
-            in  
-          vel player (-.fst player.vector_velocity +. vx',-.snd player.vector_velocity +. vy')
-          else grapin player false player.grap.pos in
-        (* saut *)
-        let player = if is_key_down Key.Up && not player.airborn then vel (airb player true) (0., 20.)
-        else player in
-        (* mise a jours des positions *)
-        let player = deplacer player in player else player) in 
-      *)
-
+        let (_, joueur) = actionjoueur joueur in
         {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}
       ) 
       else entities in
@@ -278,8 +305,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         let menu_dest_rect = Rectangle.create 0. 0. (float_of_int resolution_X) (float_of_int resolution_Y) in
         draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white;
 
+        (* affichage du joueur *)
         let player = entities.player in
-        
         let f = 
           match player.character.vector_velocity with
           |(0.,_) -> 0.
@@ -290,24 +317,23 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
                 |_ when frame<20 -> 105.
                 |_ when frame<25 -> 140.
                 |_ -> 175.
-      in
+        in
         let source_rect = Rectangle.create f 0. (if player.character.facing_right then (35.) else -. (35.)) (50.) in
         let dest_rect = Rectangle.create (fst player.character.pos) (float_of_int(resolution_Y) -. (snd player.character.pos)) (player.character.width) (player.character.height) in 
         let origin = Vector2.create 0. 0. in
-        draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;
-        
+        draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;  
         if (player.grap.using) then draw_line (int_of_float(fst player.character.pos +. (player.character.width /. 2.))) (resolution_Y - int_of_float(snd player.character.pos)) (int_of_float(fst player.grap.pos)) (resolution_Y - int_of_float(snd player.grap.pos)) Color.black; 
+        draw_rectangle 50 50 (3*player.health_point) 20 Color.green;
 
+        (* affichage ennemis *)
         let enemy = entities.ennemis in
         let enemy_dest_rect = Rectangle.create (fst enemy.character.pos) (float_of_int(resolution_Y) -. (snd enemy.character.pos)) (enemy.character.width) (enemy.character.height) in
         draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white;
         
-        draw_rectangle 50 50 (3*player.health_point) 20 Color.green;
-
+        (* affichage plateforme *)
         List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.brown) entities.plateforme_list;
       end else begin
 
-        (* draw_text "Bienvenue dans l'attaque des Titouan!" 300 200 50 Color.red; *)
         if !is_start_visible then draw_text "Appuyez sur entrée pour commencer" 350 400 50 Color.red;
       end;
       end_drawing (); 

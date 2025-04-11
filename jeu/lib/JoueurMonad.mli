@@ -21,3 +21,17 @@ val add_vector_velocity : float * float -> unit t
 val airb : bool -> unit t
 
 val deplacement : float * float -> unit t
+
+val set_grappin : bool -> float * float -> unit t
+
+(** Définit les points de vie du joueur *)
+val set_health : int -> unit t
+
+(** Modifie les points de vie du joueur en les incrémentant ou décrémentant *)
+val add_health : int -> unit t
+
+(** Définit le carburant du jetpack *)
+val set_carburant : int -> unit t
+
+(** Modifie le carburant du jetpack (positif ou négatif) *)
+val add_carburant : int -> unit t
