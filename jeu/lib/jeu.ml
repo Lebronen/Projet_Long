@@ -120,13 +120,13 @@ let setup () =
     | _ -> failwith "wrong json format"
     ) in
   let entities = { player; ennemis = enemy; plateforme_list = p_list } in
-  (menu_texture, sprite_texture, entities)
+  (menu_texture, sprite_texture, enemy_texture, entities)
 
 let start_time = ref (Raylib.get_time ())
 let is_start_visible = ref true
 let is_game_running = ref false
 
-let rec loop menu_texture sprite_texture entities frame =
+let rec loop menu_texture sprite_texture enemy_texture entities frame =
   if Raylib.window_should_close () then (
     Raylib.unload_texture menu_texture;
     Raylib.unload_texture sprite_texture;
@@ -319,8 +319,8 @@ let rec loop menu_texture sprite_texture entities frame =
       end_drawing (); 
     in
     draw_game entities;
-    loop menu_texture sprite_texture entities (if (frame==30) then 0 else (frame+1))
+    loop menu_texture sprite_texture enemy_texture entities (if (frame==30) then 0 else (frame+1))
 
 let gameloop () =
-  let menu_texture, sprite_texture, entities = setup () in
-  loop menu_texture sprite_texture entities 0
+  let menu_texture, sprite_texture, enemy_texture, entities = setup () in
+  loop menu_texture sprite_texture enemy_texture entities 0
