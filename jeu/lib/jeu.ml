@@ -39,7 +39,7 @@ let parse_json file =
 let resolution_X = 1600
 let resolution_Y = 900 
 
-  (* let pendule x y x' y' vx vy =
+  let pendule x y x' y' vx vy =
   let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
   (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
   let ax = x +. vx in
@@ -60,7 +60,7 @@ let resolution_Y = 900
     (* Étape 3 : Calcul du vecteur (vx', vy') de (x, y) vers (px, py) *)
     let vx' = px -. x in
     let vy' = py -. y in
-    (vx', vy')        *)
+    (vx', vy')       
 
      type direction = Below | Left | Right
 
@@ -85,28 +85,22 @@ let resolution_Y = 900
     let is_on_plateforme direction (c: character) p_list =
       List.exists (check_plateforme direction c.pos c.vector_velocity c.height c.width) p_list
 
-    (* let is_on_plateforme_ennemi direction (enemy: ennemi) p_list =
-      List.exists (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list *)
-
     let wich_plateforme direction (c: character) p_list =
       List.filter (check_plateforme direction c.pos c.vector_velocity c.height c.width) p_list
-
-    (* let wich_plateforme_ennemi direction (enemy: ennemi) p_list =
-      List.filter (check_plateforme direction enemy.pos enemy.vector_velocity enemy.height enemy.width) p_list *)
-   
 
 let setup () =
   Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
-  let player = create_character "joueur" "../resources/spritesheetcourse.png" 200. 350. 100. 70. in
+  let player = create_character 0 "../resources/spritesheetcourse.png" 200. 350. 100. 70. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
-  let enemy = create_character "ennemy" "../resources/blue.png" 1174. 650. 100. 100. in
+  let enemy = create_character 1 "../resources/blue.png" 1174. 650. 100. 100. in
 
 
   let sprite_texture = Raylib.load_texture player.sprite in
   let enemy_texture = Raylib.load_texture enemy.sprite in
+
 
   let parsed_list = parse_json "../resources/level.json" in
 
@@ -142,8 +136,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
       end;
       if is_key_pressed Key.Enter then is_game_running := true;
     end;
-     let entities = if !is_game_running then 
-     ( let joueur = entities.player in
+     let entities = if !is_game_running then
+    ( let joueur = entities.player in
         let actionjoueur =
           (* déplacement latéral *)
           let* () =
@@ -195,40 +189,40 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
           in
 
           (* Grappin *)
-        (*  
+        
         let* joueur = get in
           let* () =
             if is_key_down Key.Space then
               let (vx', vy') = pendule 
-                (fst joueur.character.pos +. (joueur.character.width /. 2.)) 
-                (snd joueur.character.pos) 
-                (fst joueur.grap.pos) 
-                (snd joueur.grap.pos) 
-                (fst joueur.character.vector_velocity) 
-                (snd joueur.character.vector_velocity)
+                (fst joueur.pos +. (joueur.width /. 2.)) 
+                (snd joueur.pos) 
+                (fst (get_pos_grap joueur)) 
+                (snd (get_pos_grap joueur)) 
+                (fst joueur.vector_velocity) 
+                (snd joueur.vector_velocity)
               in
               let* () =
-                if joueur.grap.using then
+                if (is_using_grap joueur)then
                   let* () = airb true in
                   return () (* Continue si le grappin est déjà utilisé *)
                 else
                   let* () =
-                    if joueur.character.facing_right then
+                    if joueur.facing_right then
                       let* () = airb true in
-                      set_grappin true (fst joueur.character.pos +. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+                      set_grappin true (fst joueur.pos +. 250. +. (joueur.width /. 2.), snd joueur.pos +. 150.)
                     else
                       let* () = airb true in
-                      set_grappin true (fst joueur.character.pos -. 250. +. (joueur.character.width /. 2.), snd joueur.character.pos +. 150.)
+                      set_grappin true (fst joueur.pos -. 250. +. (joueur.width /. 2.), snd joueur.pos +. 150.)
                   in
                   return () (* Grappin activé et position mis à jour *)
               in
-              let* () = add_vector_velocity (-.fst joueur.character.vector_velocity +. vx', -.snd joueur.character.vector_velocity +. vy') in
+              let* () = add_vector_velocity (-.fst joueur.vector_velocity +. vx', -.snd joueur.vector_velocity +. vy') in
               return () (* Vitesse mise à jour *)
             else
               let* () = set_grappin false (0.0, 0.0) in
               return () (* Si la touche Space n'est pas pressée, désactiver le grappin et réinitialiser la position *)
           in
-          *)
+          
         
           (* Collision droite *)
           let* joueur = get in
@@ -272,6 +266,7 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         let (_, joueur) = actionjoueur joueur in
         {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}
       )  
+      
       else entities in 
 
     

@@ -11,7 +11,7 @@ let ( let* ) = bind
 
 let get = fun j -> (j, j)
 
-  let create_character role_type s x y h w =
+  (* let create_character role_type s x y h w =
     let role = match role_type with
       | "joueur" ->
           Joueur {
@@ -34,8 +34,32 @@ let get = fun j -> (j, j)
       width = w;
       facing_right = true;
       airborn = false;
-    }
-  
+    } *)
+
+    let create_character int s x y h w =
+      let role = match int with
+        | 0 ->
+            Joueur {
+              grap = { pos = (0., 0.); using = false };
+              jetpack_carburant_pourcentage = 100;
+              health_point = 100;
+            }
+        | 1 ->
+            Ennemi {
+              health_point = 100;
+            }
+        | _ -> failwith "Type de rôle inconnu"
+      in
+      {
+        role;
+        pos = (x, y);
+        vector_velocity = (0., 0.);
+        sprite = s;
+        height = h;
+        width = w;
+        facing_right = true;
+        airborn = false;
+      }
 
 let set_vector_velocity (vx, vy) : unit t = fun character ->
   ((), { character with vector_velocity = (vx, vy) })
