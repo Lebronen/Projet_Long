@@ -1,4 +1,4 @@
- (* character.ml *)
+(* character.mli *)
 
 type grappin = {
   pos : float * float;
