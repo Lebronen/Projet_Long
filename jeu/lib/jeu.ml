@@ -95,7 +95,7 @@ let setup () =
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
   let player = create_character 0 "../resources/spritesheetcourse.png" 200. 350. 100. 70. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
-  let enemy = create_character 1 "../resources/blue.png" 1174. 650. 100. 100. in
+  let enemy = create_character 1 "../resources/blue.png" 1374. 100. 100. 100. in
 
 
   let sprite_texture = Raylib.load_texture player.sprite in
@@ -261,9 +261,14 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
             in
             return ()
           in
+          
+          let (_, joueur) = actionjoueur joueur in
 
-        let (_, joueur) = actionjoueur joueur in
-        {player = joueur; ennemis = entities.ennemis; plateforme_list = entities.plateforme_list}
+          let enemy = entities.ennemis in
+            let (_, enemy) = patrol 1100. 1300. 2. enemy in
+          
+
+        {player = joueur; ennemis = enemy; plateforme_list = entities.plateforme_list}
       )  
       
       else entities in 

@@ -136,3 +136,30 @@ let add_carburant (delta : int) : unit t = fun c ->
     match c.role with
     | Joueur j -> j.grap.pos
     | Ennemi _ -> 0.,0.
+
+  let patrol (x_min : float) (x_max : float) (speed : float) : unit t = fun c ->
+    match c.role with
+    | Ennemi _ ->
+        let (x, y) = c.pos in
+        let going_right = c.facing_right in
+        let new_vx = if going_right then speed else -.speed in
+        let new_x = x +. new_vx in
+        let turn_around =
+          (going_right && new_x >= x_max) ||
+          (not going_right && new_x <= x_min)
+        in
+        let final_vx = if turn_around then -.new_vx else new_vx in
+        let final_dir = if turn_around then not going_right else going_right in
+        let final_x =
+          if turn_around then
+            if going_right then x_max else x_min
+          else new_x
+        in
+        let updated = {
+          c with
+          pos = (final_x, y);
+          vector_velocity = (final_vx, snd c.vector_velocity);
+          facing_right = final_dir
+        } in
+        ((), updated)
+    | _ -> ((), c)
