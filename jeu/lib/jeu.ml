@@ -18,7 +18,7 @@ type plateforme = {
 
 type entities = {
   player : character;
-  ennemis : character list;
+  ennemis : (character * float * float) list;
   plateforme_list : plateforme list;
 }
 
@@ -26,15 +26,27 @@ type entities = {
 let parse_json file = 
   let json = Basic.from_file file in
   match json with
-  |`Assoc l -> if not  (List.length l = 1) then failwith "wrong level format" else (
-    let (_, pl) = List.hd l in match pl with
+  |`Assoc l -> if not  (List.length l = 2) then failwith "wrong level format" else (
+    let p_list =
+    (let (_, pl) = List.hd l in match pl with
     |`List plist -> List.map (fun p -> 
       match p with
       |`Assoc jp -> List.map (fun champ -> snd champ) jp
       |_ -> failwith "wrong json format"
       ) plist
-      |_ -> failwith "wrong json format")
+    |_ -> failwith "wrong json format")
+    in let e_list = 
+     (let (_, el) = List.nth l 1 in match el with
+   |`List elist -> List.map (fun e ->
+      match e with
+      | `Assoc je -> List.map (fun champ -> snd champ) je
+      | _ -> failwith "wrong json format"
+      ) elist
+      | _ -> failwith "wrong json format")
+   in (p_list, e_list)
+   )
     | _ -> failwith "not a json object"
+  
       
 let resolution_X = 1600
 let resolution_Y = 900 
@@ -95,25 +107,37 @@ let setup () =
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
   let player = create_character 0 "../resources/spritesheetcourse.png" 200. 350. 100. 70. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
-  let enemy = create_character 1 "../resources/blue.png" 1374. 100. 100. 100. in
-  let enemy_2 = create_character 1 "../resources/red.png" 800. 300. 100. 100. in
-
-
-  let sprite_texture = Raylib.load_texture player.sprite in
-  let enemy_textures = [Raylib.load_texture enemy.sprite; Raylib.load_texture enemy_2.sprite] in
-
+  (*let enemy = create_character 1 "../resources/blue.png" 1374. 100. 100. 100. in
+  let enemy_2 = create_character 1 "../resources/red.png" 800. 300. 100. 100. in*)
 
   let parsed_list = parse_json "../resources/level.json" in
 
-  let p_list = List.init (List.length parsed_list) (fun i -> 
-    let l = List.nth parsed_list i in
+  let pennemis = List.init (List.length (snd parsed_list)) (fun i ->
+    let l = List.nth (snd parsed_list) i in
+    match l with
+    |s::xmin::xmax::y::[] -> (match (s,xmin,xmax,y) with
+      |(`String si, `Float xmini, `Float xmaxi, `Float yi) -> (create_character 1 si xmini yi 100. 100., xmini, xmaxi)
+      | _ -> failwith "wrong json format"
+      )
+    | _ -> failwith "wrong json format"
+    )
+  in
+
+  let sprite_texture = Raylib.load_texture player.sprite in
+  (*let enemy_textures = [Raylib.load_texture enemy.sprite; Raylib.load_texture enemy_2.sprite] in*)
+
+  let enemy_textures = List.init (List.length pennemis) (fun i -> let (e, _, _) = List.nth pennemis i in
+    Raylib.load_texture e.sprite) in
+
+  let p_list = List.init (List.length (fst parsed_list)) (fun i -> 
+    let l = List.nth (fst parsed_list) i in
     match l with
     |x::y::w::h::[] -> (match (x,y,w,h) with
     |(`Int xi, `Int yi, `Int wi, `Int hi) -> {platform_x = xi; platform_y = yi; platform_width = wi; platform_height = hi;}
     | _ -> failwith "wrong json format")
     | _ -> failwith "wrong json format"
     ) in
-  let entities = { player; ennemis = [enemy;enemy_2]; plateforme_list = p_list } in
+  let entities = { player; ennemis = pennemis; plateforme_list = p_list } in
   (menu_texture, sprite_texture, enemy_textures, entities)
 
 let start_time = ref (Raylib.get_time ())
@@ -266,12 +290,15 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
           let (_, joueur) = actionjoueur joueur in
 
           let ennemis = entities.ennemis in
-            let (_, enemy) = patrol 1100. 1300. 2. (List.nth ennemis 0) in
 
-          let (_, enemy_2) = patrol 800. 1100. 2. (List.nth ennemis 1) in
+           (* let (_, enemy) = patrol 1100. 1300. 2. (List.nth ennemis 0) in
+
+          let (_, enemy_2) = patrol 800. 1100. 2. (List.nth ennemis 1) in*)
+
+          let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 2. e  in (enemy,xmin, xmax)) ennemis) in
           
 
-        {player = joueur; ennemis = [enemy;enemy_2]; plateforme_list = entities.plateforme_list}
+        {player = joueur; ennemis = ennemis; plateforme_list = entities.plateforme_list}
       )  
       
       else entities in 
@@ -313,7 +340,7 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
         (* let enemy = List.nth entities.ennemis 0 in
         let enemy_dest_rect = Rectangle.create (fst enemy.pos) (float_of_int(resolution_Y) -. (snd enemy.pos)) (enemy.width) (enemy.height) in
         draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white; *)
-        List.iter2 (fun e -> fun t ->
+        List.iter2 (fun (e,_,_) -> fun t ->
           let enemy_dest_rect = Rectangle.create (fst e.pos) (float_of_int(resolution_Y) -. (snd e.pos)) (e.width) (e.height) in
         draw_texture_pro t source_rect enemy_dest_rect origin 0. Color.white) entities.ennemis enemy_textures ;
         
