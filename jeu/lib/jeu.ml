@@ -18,7 +18,7 @@ type plateforme = {
 
 type entities = {
   player : character;
-  ennemis : character;
+  ennemis : character list;
   plateforme_list : plateforme list;
 }
 
@@ -96,10 +96,11 @@ let setup () =
   let player = create_character 0 "../resources/spritesheetcourse.png" 200. 350. 100. 70. in
   (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
   let enemy = create_character 1 "../resources/blue.png" 1374. 100. 100. 100. in
+  let enemy_2 = create_character 1 "../resources/red.png" 800. 300. 100. 100. in
 
 
   let sprite_texture = Raylib.load_texture player.sprite in
-  let enemy_texture = Raylib.load_texture enemy.sprite in
+  let enemy_textures = [Raylib.load_texture enemy.sprite; Raylib.load_texture enemy_2.sprite] in
 
 
   let parsed_list = parse_json "../resources/level.json" in
@@ -112,14 +113,14 @@ let setup () =
     | _ -> failwith "wrong json format")
     | _ -> failwith "wrong json format"
     ) in
-  let entities = { player; ennemis = enemy; plateforme_list = p_list } in
-  (menu_texture, sprite_texture, enemy_texture, entities)
+  let entities = { player; ennemis = [enemy;enemy_2]; plateforme_list = p_list } in
+  (menu_texture, sprite_texture, enemy_textures, entities)
 
 let start_time = ref (Raylib.get_time ())
 let is_start_visible = ref true
 let is_game_running = ref false
 
-let rec loop menu_texture sprite_texture enemy_texture entities frame =
+let rec loop menu_texture sprite_texture enemy_textures entities frame =
   if Raylib.window_should_close () then (
     Raylib.unload_texture menu_texture;
     Raylib.unload_texture sprite_texture;
@@ -264,11 +265,13 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
           
           let (_, joueur) = actionjoueur joueur in
 
-          let enemy = entities.ennemis in
-            let (_, enemy) = patrol 1100. 1300. 2. enemy in
+          let ennemis = entities.ennemis in
+            let (_, enemy) = patrol 1100. 1300. 2. (List.nth ennemis 0) in
+
+          let (_, enemy_2) = patrol 800. 1100. 2. (List.nth ennemis 1) in
           
 
-        {player = joueur; ennemis = enemy; plateforme_list = entities.plateforme_list}
+        {player = joueur; ennemis = [enemy;enemy_2]; plateforme_list = entities.plateforme_list}
       )  
       
       else entities in 
@@ -307,9 +310,12 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
         draw_rectangle 50 50 (3*(get_health_point player)) 20 Color.green;
 
         (* affichage ennemis *)
-        let enemy = entities.ennemis in
+        (* let enemy = List.nth entities.ennemis 0 in
         let enemy_dest_rect = Rectangle.create (fst enemy.pos) (float_of_int(resolution_Y) -. (snd enemy.pos)) (enemy.width) (enemy.height) in
-        draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white;
+        draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white; *)
+        List.iter2 (fun e -> fun t ->
+          let enemy_dest_rect = Rectangle.create (fst e.pos) (float_of_int(resolution_Y) -. (snd e.pos)) (e.width) (e.height) in
+        draw_texture_pro t source_rect enemy_dest_rect origin 0. Color.white) entities.ennemis enemy_textures ;
         
         (* affichage plateforme *)
         List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.brown) entities.plateforme_list;
@@ -320,8 +326,8 @@ let rec loop menu_texture sprite_texture enemy_texture entities frame =
       end_drawing (); 
     in
     draw_game entities;
-    loop menu_texture sprite_texture enemy_texture entities (if (frame==30) then 0 else (frame+1))
+    loop menu_texture sprite_texture enemy_textures entities (if (frame==30) then 0 else (frame+1))
 
 let gameloop () =
-  let menu_texture, sprite_texture, enemy_texture, entities = setup () in
-  loop menu_texture sprite_texture enemy_texture entities 0
+  let menu_texture, sprite_texture, enemy_textures, entities = setup () in
+  loop menu_texture sprite_texture enemy_textures entities 0
