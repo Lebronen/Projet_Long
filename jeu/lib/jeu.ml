@@ -81,8 +81,8 @@ let resolution_Y = 900
       | Below ->
           (snd vector_velocity +. snd pos -. height) < float_of_int plateform.platform_y
           && (snd pos -. height) >= float_of_int plateform.platform_y
-          && (fst pos +. width -. 15.) > float_of_int plateform.platform_x
-          && (fst pos +. 15.) < (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
+          && (fst pos +. width) > float_of_int plateform.platform_x
+          && (fst pos) < (float_of_int plateform.platform_x +. float_of_int plateform.platform_width)
       | Right ->
           (fst vector_velocity +. fst pos +. width) > float_of_int plateform.platform_x
           && (fst pos +. width) <= float_of_int plateform.platform_x
@@ -144,7 +144,7 @@ let start_time = ref (Raylib.get_time ())
 let is_start_visible = ref true
 let is_game_running = ref false
 
-let rec loop menu_texture sprite_texture enemy_textures entities frame =
+let rec loop menu_texture sprite_texture enemy_textures entities=
   if Raylib.window_should_close () then (
     Raylib.unload_texture menu_texture;
     Raylib.unload_texture sprite_texture;
@@ -168,12 +168,24 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
             match (is_key_down Key.Right, is_key_down Key.Left) with
             | true, false ->
                 let* joueur = get in
+                if is_using_grap joueur then 
+                  if fst joueur.vector_velocity < 4.0 then
+                    add_vector_velocity (6.0, 0.0)
+                  else
+                    return ()
+                else
                 if fst joueur.vector_velocity < 8.0 then
                   add_vector_velocity (8.0, 0.0)
                 else
                   return ()
             | false, true ->
                 let* joueur = get in
+                if is_using_grap joueur then 
+                  if fst joueur.vector_velocity > -4.0 then
+                    add_vector_velocity (-6.0, 0.0)
+                  else
+                    return ()
+                else
                 if fst joueur.vector_velocity > -8.0 then
                   add_vector_velocity (-8.0, 0.0)
                 else
@@ -186,9 +198,13 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
                   return ()
           in
         
+
           (* Gravité *)
           let* () = add_vector_velocity (0.0,-1.)
         in
+
+        let* () = add_frame
+      in
 
           (* Collision avec le sol*)
           let* joueur = get in
@@ -201,19 +217,8 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
             ) else return ()
           in
 
-          (* Collision avec plateformes en dessous *)
-          let* joueur = get in
-          let* () =
-            if is_on_plateforme Below joueur entities.plateforme_list && not (is_using_grap joueur) then
-              let p = List.nth (wich_plateforme Below joueur entities.plateforme_list) 0 in
-              let vy = snd joueur.vector_velocity -. (float_of_int p.platform_y -. (snd joueur.pos -. joueur.height)) in
-              let* () = add_vector_velocity (0., -.vy) in
-              airb false
-            else return ()
-          in
 
-          (* Grappin *)
-        
+        (* Grappin *) 
         let* joueur = get in
           let* () =
             if is_key_down Key.Space then
@@ -246,7 +251,17 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
               let* () = set_grappin false (0.0, 0.0) in
               return () (* Si la touche Space n'est pas pressée, désactiver le grappin et réinitialiser la position *)
           in
-          
+
+          (* Collision avec plateformes en dessous *)
+          let* joueur = get in
+          let* () =
+            if is_on_plateforme Below joueur entities.plateforme_list then
+              let p = List.nth (wich_plateforme Below joueur entities.plateforme_list) 0 in
+              let vy = snd joueur.vector_velocity -. (float_of_int p.platform_y -. (snd joueur.pos -. joueur.height)) in
+              let* () = add_vector_velocity (0., -.vy) in
+              airb false
+            else return ()
+          in
         
           (* Collision droite *)
           let* joueur = get in
@@ -291,12 +306,11 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
 
           let ennemis = entities.ennemis in
 
-           (* let (_, enemy) = patrol 1100. 1300. 2. (List.nth ennemis 0) in
+          (* let (_, enemy) = patrol 1100. 1300. 2. (List.nth ennemis 0) in
 
           let (_, enemy_2) = patrol 800. 1100. 2. (List.nth ennemis 1) in*)
 
           let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 2. e  in (enemy,xmin, xmax)) ennemis) in
-          
 
         {player = joueur; ennemis = ennemis; plateforme_list = entities.plateforme_list}
       )  
@@ -315,13 +329,13 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
         draw_texture_pro menu_texture menu_source menu_dest_rect origin 0. Color.white;
 
         (* affichage du joueur *)
-        let player = entities.  player in
+        let player = entities.player in
         let f = 
-          if is_using_grap player then 0.
+          if is_using_grap player && (get_frame player == 0) then 0.
           else
           match player.vector_velocity with
           |(0.,_) -> 0.
-          |_ -> match frame with
+          |_ -> let frame = get_frame player in match frame with
                 |_ when frame<5 -> 0.
                 |_ when frame<10 -> 35.
                 |_ when frame<15 -> 70.
@@ -353,8 +367,35 @@ let rec loop menu_texture sprite_texture enemy_textures entities frame =
       end_drawing (); 
     in
     draw_game entities;
-    loop menu_texture sprite_texture enemy_textures entities (if (frame==30) then 0 else (frame+1))
+    
+    if is_key_pressed Key.P then
+    let parsed_list = parse_json "../resources/level2.json" in 
+    let pennemis = List.init (List.length (snd parsed_list)) (fun i ->
+      let l = List.nth (snd parsed_list) i in
+      match l with
+      |s::xmin::xmax::y::[] -> (match (s,xmin,xmax,y) with
+        |(`String si, `Float xmini, `Float xmaxi, `Float yi) -> (create_character 1 si xmini yi 100. 100., xmini, xmaxi)
+        | _ -> failwith "wrong json format"
+        )
+      | _ -> failwith "wrong json format"
+      )
+    in
+    let enemy_textures = List.init (List.length pennemis) (fun i -> let (e, _, _) = List.nth pennemis i in
+      Raylib.load_texture e.sprite) in 
+      let p_list = List.init (List.length (fst parsed_list)) (fun i -> 
+        let l = List.nth (fst parsed_list) i in
+        match l with
+        |x::y::w::h::[] -> (match (x,y,w,h) with
+        |(`Int xi, `Int yi, `Int wi, `Int hi) -> {platform_x = xi; platform_y = yi; platform_width = wi; platform_height = hi;}
+        | _ -> failwith "wrong json format")
+        | _ -> failwith "wrong json format"
+        ) in
+        (* let joueur = entities.player in
+        let* () =  *)
+      loop menu_texture sprite_texture enemy_textures {player = entities.player; ennemis = pennemis; plateforme_list = p_list}
+    else
+    loop menu_texture sprite_texture enemy_textures entities
 
 let gameloop () =
   let menu_texture, sprite_texture, enemy_textures, entities = setup () in
-  loop menu_texture sprite_texture enemy_textures entities 0
+  loop menu_texture sprite_texture enemy_textures entities

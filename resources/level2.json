@@ -1,0 +1,56 @@
+{
+    "platforms": [
+      {
+        "x": 1000,
+        "y": 550,
+        "width": 200,
+        "height": 30
+      },
+      {
+        "x": 500,
+        "y": 400,
+        "width": 600,
+        "height": 30
+      },
+      {
+        "x": 0,
+        "y": 200,
+        "width": 400,
+        "height": 30
+      },
+      {
+        "x": 1600,
+        "y": 2000,
+        "width": 0,
+        "height": 2000
+      },
+      {
+        "x": 0,
+        "y": 2000,
+        "width": 0,
+        "height": 2000
+      }
+    ],
+    "ennemis": [
+      {
+        "sprite": "../resources/red.png",
+        "xmin": 1100.0,
+        "xmax": 1300.0,
+        "y": 100.0
+      },
+
+      {
+        "sprite": "../resources/blue.png",
+        "xmin": 800.0,
+        "xmax": 1100.0,
+        "y": 300.0
+      },
+      
+      {
+        "sprite": "../resources/blue.png",
+        "xmin": 500.0,
+        "xmax": 850.0,
+        "y": 100.0
+      }
+    ]
+  }

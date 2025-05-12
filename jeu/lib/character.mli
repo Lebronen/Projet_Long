@@ -9,6 +9,7 @@ type joueur = {
   grap : grappin;
   jetpack_carburant_pourcentage : int;
   health_point : int;
+  frame : int;
 }
 
 type ennemi = {

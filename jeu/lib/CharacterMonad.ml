@@ -43,6 +43,7 @@ let get = fun j -> (j, j)
               grap = { pos = (0., 0.); using = false };
               jetpack_carburant_pourcentage = 100;
               health_point = 100;
+              frame = 0;
             }
         | 1 ->
             Ennemi {
@@ -60,7 +61,8 @@ let get = fun j -> (j, j)
         facing_right = true;
         airborn = false;
       }
-
+let set_pos (vx, vy) : unit t = fun character ->
+  ((), { character with pos = (vx, vy) })
 let set_vector_velocity (vx, vy) : unit t = fun character ->
   ((), { character with vector_velocity = (vx, vy) })
 
@@ -136,6 +138,18 @@ let add_carburant (delta : int) : unit t = fun c ->
     match c.role with
     | Joueur j -> j.grap.pos
     | Ennemi _ -> 0.,0.
+
+  let get_frame (c : character) : int =
+    match c.role with
+    | Joueur j -> j.frame
+    | Ennemi _ -> 0
+let add_frame : unit t = fun c ->
+  match c.role with
+  | Joueur j ->
+      let new_joueur = { j with frame = (if (j.frame==30) then 0 else (j.frame+1)) } in
+      ((), { c with role = Joueur new_joueur })
+  | _ -> ((), c)
+ 
 
   let patrol (x_min : float) (x_max : float) (speed : float) : unit t = fun c ->
     match c.role with
