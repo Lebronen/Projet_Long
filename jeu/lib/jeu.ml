@@ -105,12 +105,9 @@ let setup () =
   Raylib.set_target_fps 60;
 
   let menu_texture = Raylib.load_texture "../resources/PNG/background 2/Preview 2.png" in
-  let player = create_character 0 "../resources/spritesheetcourse.png" 200. 350. 100. 70. in
-  (* let enemy = create_personnage "ennemi" "../resources/blue.png" 100. 100. 1200. 650. in *)
-  (*let enemy = create_character 1 "../resources/blue.png" 1374. 100. 100. 100. in
-  let enemy_2 = create_character 1 "../resources/red.png" 800. 300. 100. 100. in*)
+  let player = create_character 0 "../resources/spritesheet.png" 50. 100. 100. 70. in
 
-  let parsed_list = parse_json "../resources/level.json" in
+  let parsed_list = parse_json "../resources/level/level1.json" in
 
   let pennemis = List.init (List.length (snd parsed_list)) (fun i ->
     let l = List.nth (snd parsed_list) i in
@@ -122,10 +119,10 @@ let setup () =
     | _ -> failwith "wrong json format"
     )
   in
-
+  let carburant_texture = Raylib.load_texture "../resources/lightning.png" in
   let sprite_texture = Raylib.load_texture player.sprite in
-  (*let enemy_textures = [Raylib.load_texture enemy.sprite; Raylib.load_texture enemy_2.sprite] in*)
-
+  let vie_texture = Raylib.load_texture "../resources/vie.png" in
+  
   let enemy_textures = List.init (List.length pennemis) (fun i -> let (e, _, _) = List.nth pennemis i in
     Raylib.load_texture e.sprite) in
 
@@ -138,16 +135,18 @@ let setup () =
     | _ -> failwith "wrong json format"
     ) in
   let entities = { player; ennemis = pennemis; plateforme_list = p_list } in
-  (menu_texture, sprite_texture, enemy_textures, entities)
+  (menu_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture)
 
 let start_time = ref (Raylib.get_time ())
 let is_start_visible = ref true
 let is_game_running = ref false
 
-let rec loop menu_texture sprite_texture enemy_textures entities=
+let rec loop menu_texture sprite_texture enemy_textures entities carburant_texture vie_texture level=
   if Raylib.window_should_close () then (
     Raylib.unload_texture menu_texture;
     Raylib.unload_texture sprite_texture;
+    Raylib.unload_texture carburant_texture;
+    Raylib.unload_texture vie_texture;
     Raylib.close_window ()
   )
   else
@@ -197,31 +196,19 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
                 else
                   return ()
           in
-        
 
           (* Gravité *)
           let* () = add_vector_velocity (0.0,-1.)
         in
 
+          (* Passage a la frame suivante du sprite*)
         let* () = add_frame
       in
-
-          (* Collision avec le sol*)
-          let* joueur = get in
-          let y = snd joueur.vector_velocity +. snd joueur.pos -. joueur.height in
-          let* () =
-            if y < 0. then (
-              let vy = snd joueur.vector_velocity +. snd joueur.pos -. joueur.height in
-              let* () = add_vector_velocity (0., -.vy) in
-              airb false
-            ) else return ()
-          in
-
 
         (* Grappin *) 
         let* joueur = get in
           let* () =
-            if is_key_down Key.Space then
+            if (is_key_down Key.Space && ((get_carburant joueur) > 0))then
               let (vx', vy') = pendule 
                 (fst joueur.pos +. (joueur.width /. 2.)) 
                 (snd joueur.pos) 
@@ -231,8 +218,9 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
                 (snd joueur.vector_velocity)
               in
               let* () =
-                if (is_using_grap joueur)then
+                if (is_using_grap joueur) then
                   let* () = airb true in
+                  let* () = add_carburant (-2) in
                   return () (* Continue si le grappin est déjà utilisé *)
                 else
                   let* () =
@@ -260,7 +248,18 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
               let vy = snd joueur.vector_velocity -. (float_of_int p.platform_y -. (snd joueur.pos -. joueur.height)) in
               let* () = add_vector_velocity (0., -.vy) in
               airb false
-            else return ()
+            else airb true
+          in
+
+          (* Collision avec le sol*)
+          let* joueur = get in
+          let y = snd joueur.vector_velocity +. snd joueur.pos -. joueur.height in
+          let* () =
+            if y < 0. then (
+              let vy = snd joueur.vector_velocity +. snd joueur.pos -. joueur.height in
+              let* () = add_vector_velocity (0., -.vy) in
+              airb false
+            ) else return ()
           in
         
           (* Collision droite *)
@@ -293,6 +292,18 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
               return ()
           in
 
+          (* Récuperation du jetpack *)
+          let* joueur = get in
+            let* () = if ((not joueur.airborn) && (get_carburant joueur) <= 150) then add_carburant 1
+            else return ()
+          in
+
+          (* let* joueur = get in
+            let* () =
+            if is_key_down Key.A then return()
+            else return ()
+          in *)
+
           (* Déplacement *)
           let* joueur = get in
             let* () = deplacement
@@ -306,11 +317,7 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
 
           let ennemis = entities.ennemis in
 
-          (* let (_, enemy) = patrol 1100. 1300. 2. (List.nth ennemis 0) in
-
-          let (_, enemy_2) = patrol 800. 1100. 2. (List.nth ennemis 1) in*)
-
-          let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 2. e  in (enemy,xmin, xmax)) ennemis) in
+          let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 4. e  in (enemy,xmin, xmax)) ennemis) in
 
         {player = joueur; ennemis = ennemis; plateforme_list = entities.plateforme_list}
       )  
@@ -333,9 +340,9 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
         let f = 
           if is_using_grap player && (get_frame player == 0) then 0.
           else
-          match player.vector_velocity with
-          |(0.,_) -> 0.
-          |_ -> let frame = get_frame player in match frame with
+          if (player.airborn) then 245.
+          else if (fst player.vector_velocity = 0.) then 210.
+          else let frame = get_frame player in match frame with
                 |_ when frame<5 -> 0.
                 |_ when frame<10 -> 35.
                 |_ when frame<15 -> 70.
@@ -348,18 +355,21 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
         let origin = Vector2.create 0. 0. in
         draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;  
         if (is_using_grap player) then draw_line (int_of_float(fst player.pos +. (player.width /. 2.))) (resolution_Y - int_of_float(snd player.pos)) (int_of_float(fst (get_pos_grap player))) (resolution_Y - int_of_float(snd (get_pos_grap player))) Color.black; 
-        draw_rectangle 50 50 (3*(get_health_point player)) 20 Color.green;
+        (* affichage du carburant *)
+        draw_texture_pro carburant_texture (Rectangle.create 0. 0. 40. 40.) (Rectangle.create 30. 10. 40. 40.) (Vector2.create 0. 0.) 0. Color.white; 
+        draw_rectangle 80 20 (2*(get_carburant player)) 20 Color.skyblue;
+
+        (* affichage de la vie *)
+        draw_texture_pro vie_texture (Rectangle.create 0. 0. 40. 40.) (Rectangle.create 30. 50. 40. 40.) (Vector2.create 0. 0.) 0. Color.white; 
+        draw_rectangle 80 60 (2*(get_health_point player)) 20 Color.green;
 
         (* affichage ennemis *)
-        (* let enemy = List.nth entities.ennemis 0 in
-        let enemy_dest_rect = Rectangle.create (fst enemy.pos) (float_of_int(resolution_Y) -. (snd enemy.pos)) (enemy.width) (enemy.height) in
-        draw_texture_pro enemy_texture source_rect enemy_dest_rect origin 0. Color.white; *)
         List.iter2 (fun (e,_,_) -> fun t ->
           let enemy_dest_rect = Rectangle.create (fst e.pos) (float_of_int(resolution_Y) -. (snd e.pos)) (e.width) (e.height) in
         draw_texture_pro t source_rect enemy_dest_rect origin 0. Color.white) entities.ennemis enemy_textures ;
         
         (* affichage plateforme *)
-        List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.brown) entities.plateforme_list;
+        List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.black) entities.plateforme_list;
       end else begin
 
         if !is_start_visible then draw_text "Appuyez sur entrée pour commencer" 350 400 50 Color.red;
@@ -369,7 +379,8 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
     draw_game entities;
     
     if is_key_pressed Key.P then
-    let parsed_list = parse_json "../resources/level2.json" in 
+    let level = level+1 in
+    let parsed_list = parse_json "../resources/level/level2.json" in 
     let pennemis = List.init (List.length (snd parsed_list)) (fun i ->
       let l = List.nth (snd parsed_list) i in
       match l with
@@ -390,12 +401,20 @@ let rec loop menu_texture sprite_texture enemy_textures entities=
         | _ -> failwith "wrong json format")
         | _ -> failwith "wrong json format"
         ) in
-        (* let joueur = entities.player in
-        let* () =  *)
-      loop menu_texture sprite_texture enemy_textures {player = entities.player; ennemis = pennemis; plateforme_list = p_list}
+        let menu_texture = 
+        match level with
+        |2 -> Raylib.load_texture "../resources/PNG/background 1/Preview 1.png"
+        |3 -> Raylib.load_texture "../resources/PNG/background 3/Preview 3.png"
+        |_ -> Raylib.load_texture "../resources/PNG/background 1/Preview 1.png"
+        
+        in
+         let j =
+        let* () = set_pos (50., 100.) in return () in 
+        let (_,joueur) = j entities.player in
+      loop menu_texture sprite_texture enemy_textures {player = joueur; ennemis = pennemis; plateforme_list = p_list} carburant_texture vie_texture level
     else
-    loop menu_texture sprite_texture enemy_textures entities
+    loop menu_texture sprite_texture enemy_textures entities carburant_texture vie_texture level
 
 let gameloop () =
-  let menu_texture, sprite_texture, enemy_textures, entities = setup () in
-  loop menu_texture sprite_texture enemy_textures entities
+  let menu_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture = setup () in
+  loop menu_texture sprite_texture enemy_textures entities carburant_texture vie_texture 1
