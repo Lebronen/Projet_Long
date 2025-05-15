@@ -114,7 +114,7 @@ let setup () =
     let l = List.nth (snd parsed_list) i in
     match l with
     |s::xmin::xmax::y::[] -> (match (s,xmin,xmax,y) with
-      |(`String si, `Float xmini, `Float xmaxi, `Float yi) -> (create_character 1 si xmini yi 100. 100., xmini, xmaxi)
+      |(`String si, `Float xmini, `Float xmaxi, `Float yi) -> (create_character 1 si xmini yi 150. 150., xmini, xmaxi)
       | _ -> failwith "wrong json format"
       )
     | _ -> failwith "wrong json format"
@@ -320,8 +320,37 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
           
           let (_, joueur) = action joueur in
 
-          let ennemis = entities.ennemis in
 
+          let collide (x1, y1, w1, h1) (x2, y2, w2, h2) = not (x1 +. w1 < x2 || x2 +. w2 < x1 || y1 +. h1 < y2 || y2 +. h2 < y1) in
+            let update_player_on_enemy_collision (player : character) (enemies : (character * float * float) list) : character =
+            let player_box = 
+              let x, y = joueur.pos in
+              (x, y, joueur.width, joueur.height)
+            in
+            let collided = 
+              List.exists (fun (enemy, _, _) ->
+                match enemy.role with
+                | Ennemi _ ->
+                    let ex, ey = enemy.pos in
+                    let enemy_box = (ex, ey, enemy.width, enemy.height) in
+                    collide player_box enemy_box
+                | _ -> false
+              ) enemies
+            in
+            if collided then
+              match player.role with
+              | Joueur j ->
+                  let new_joueur = { j with health_point = j.health_point - 1 } in
+                  { player with role = Joueur new_joueur }
+              | _ -> player
+            else player
+          in 
+          let joueur = update_player_on_enemy_collision joueur entities.ennemis
+          in
+
+
+          let ennemis = entities.ennemis in
+          
           let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 4. e  in (enemy,xmin, xmax)) ennemis) in
 
         {player = joueur; ennemis = ennemis; plateforme_list = entities.plateforme_list}
@@ -364,7 +393,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         in
         let t = if get_frame player>30 then 75. else 35. in
         let source_rect = Rectangle.create f 0. (if player.facing_right then (t) else -. (t)) (50.) in
-        let dest_rect = Rectangle.create (fst player.pos) (float_of_int(resolution_Y) -. (snd player.pos)) ((if get_frame player>30 then (player.width)*.2. else player.width)) (player.height) in 
+        let dest_rect = Rectangle.create (if get_frame player>30 && (not player.facing_right) then fst player.pos -. 35. else fst player.pos) (float_of_int(resolution_Y) -. (snd player.pos)) ((if get_frame player>30 then (player.width)*.2. else player.width)) (player.height) in 
         let origin = Vector2.create 0. 0. in
         draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;  
 
@@ -383,6 +412,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         draw_rectangle 80 60 (2*(get_health_point player)) 20 Color.green;
 
         (* affichage ennemis *)
+        let source_rect = Rectangle.create 0. 0. 350. 350. in
         List.iter2 (fun (e,_,_) -> fun t ->
           let enemy_dest_rect = Rectangle.create (fst e.pos) (float_of_int(resolution_Y) -. (snd e.pos)) (e.width) (e.height) in
         draw_texture_pro t source_rect enemy_dest_rect origin 0. Color.white) entities.ennemis enemy_textures ;
@@ -422,7 +452,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
       let l = List.nth (snd parsed_list) i in
       match l with
       |s::xmin::xmax::y::[] -> (match (s,xmin,xmax,y) with
-        |(`String si, `Float xmini, `Float xmaxi, `Float yi) -> (create_character 1 si xmini yi 100. 100., xmini, xmaxi)
+        |(`String si, `Float xmini, `Float xmaxi, `Float yi) -> (create_character 1 si xmini yi 150. 150., xmini, xmaxi)
         | _ -> failwith "wrong json format"
         )
       | _ -> failwith "wrong json format"
@@ -448,7 +478,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         
         in
          let j =
-        let* () = set_pos (0., 100.) in return () in 
+        let* () = set_pos (0., 100.) in  set_health 100 in
         let (_,joueur) = j entities.player in
       loop menu_texture bg_texture sprite_texture enemy_textures {player = joueur; ennemis = pennemis; plateforme_list = p_list} carburant_texture vie_texture porte_texture level
     else

@@ -2,13 +2,13 @@
     "platforms": [
       {
         "x": 200,
-        "y": 500,
+        "y": 450,
         "width": 300,
         "height": 30
       },
       {
         "x": 500,
-        "y": 700,
+        "y": 650,
         "width": 500,
         "height": 30
       },
@@ -33,17 +33,17 @@
     ],
     "ennemis": [
       {
-        "sprite": "../resources/blue.png",
+        "sprite": "../resources/knight.png",
         "xmin": 1100.0,
         "xmax": 1300.0,
-        "y": 100.0
+        "y": 150.0
       },
 
       {
-        "sprite": "../resources/red.png",
+        "sprite": "../resources/knight.png",
         "xmin": 800.0,
         "xmax": 1100.0,
-        "y": 300.0
+        "y": 350.0
       }
     ]
   }
