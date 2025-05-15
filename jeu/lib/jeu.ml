@@ -468,7 +468,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         draw_texture_pro t source_rect enemy_dest_rect origin 0. Color.white) entities.ennemis enemy_textures ;
         
         (* affichage plateforme *)
-        List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.black) entities.plateforme_list;
+        List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.darkbrown) entities.plateforme_list;
       end else begin
         (* affichage du fond menu *)
         let origin = Vector2.create 0. 0. in
@@ -488,7 +488,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
       25. >= (snd entities.player.pos-. entities.player.height) && 25. <= (snd entities.player.pos)
       )
     then
-    let level = level+1 in
+    let level = if level=4 then 1 else level+1 in
     let levelf =
       match level with
       |1 -> "../resources/level/level1.json"
