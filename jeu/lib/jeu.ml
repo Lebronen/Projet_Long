@@ -321,7 +321,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
           let (_, joueur) = action joueur in
 
 
-          let collide (x1, y1, w1, h1) (x2, y2, w2, h2) = not (x1 +. w1 < x2 || x2 +. w2 < x1 || y1 +. h1 < y2 || y2 +. h2 < y1) in
+          let collide (x1, y1, w1, h1) (x2, y2, w2, h2) = not (x1 +. w1 < x2 || x2 +. w2 < x1 || y1 -. h1 > y2 || y2 -. h2 > y1) in
             let update_player_on_enemy_collision (player : character) (enemies : (character * float * float) list) : character =
             let player_box = 
               let x, y = joueur.pos in
@@ -349,16 +349,66 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
           in
 
 
-          let ennemis = entities.ennemis in
+          let update_ennemis_on_collision (ennemis : (character * float * float) list) (joueur : character) : (character * float * float) list =
+            let jx, jy = joueur.pos in
+            let jw, jh = joueur.width, joueur.height in
           
-          let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 4. e  in (enemy,xmin, xmax)) ennemis) in
+            (* On applique l'effet seulement si frame > 30 *)
+            if get_frame joueur > 30 then
+              let box_joueur =
+                if joueur.facing_right then
+                  (jx, jy, jw +. 65., jh)
+                else
+                  (jx -. 65., jy, jw +. 65., jh)
+              in
+              List.map (fun (ennemi, fx, fy) ->
+                let ex, ey = ennemi.pos in
+                let ew, eh = ennemi.width, ennemi.height in
+                let box_ennemi = (ex, ey, ew, eh) in
+                if collide box_joueur box_ennemi then
+                  match ennemi.role with
+                  | Ennemi e ->
+                      let new_e = { e with health_point = e.health_point - 5 } in
+                      ({ ennemi with role = Ennemi new_e }, fx, fy)
+                  | _ -> (ennemi, fx, fy)
+                else
+                  (ennemi, fx, fy)
+              ) ennemis
+            else
+              (* Si frame <= 30, pas de dégâts, on renvoie la liste inchangée *)
+              ennemis
+              in
+          
+          let ennemis = update_ennemis_on_collision entities.ennemis joueur in
+          
+          let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 2. e  in (enemy,xmin, xmax)) ennemis) in
 
         {player = joueur; ennemis = ennemis; plateforme_list = entities.plateforme_list}
       )  
       
       else entities in 
 
-    
+        let filtrer_characters (chars : (Character.character * float * float) list) (bs : 'b list) =
+          let rec aux chars bs acc_chars acc_bs = match chars, bs with
+            | [], [] -> List.rev acc_chars, List.rev acc_bs
+            | (c, f1, f2)::cs, b::bs_tail ->
+                let hp = match c.role with
+                  | Joueur j -> j.health_point
+                  | Ennemi e -> e.health_point
+                in
+                if hp < 0 then
+                  aux cs bs_tail acc_chars acc_bs
+                else
+                  aux cs bs_tail ((c, f1, f2)::acc_chars) (b::acc_bs)
+            | _ -> failwith "Les deux listes doivent avoir la même longueur"
+          in
+          aux chars bs [] []
+        in
+        let e, enemy_textures= filtrer_characters entities.ennemis enemy_textures
+        in
+        let entities = {player = entities.player; ennemis = e; plateforme_list = entities.plateforme_list}
+        in
+
     let draw_game entities = 
       begin_drawing (); 
       clear_background Color.white;
@@ -393,7 +443,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         in
         let t = if get_frame player>30 then 75. else 35. in
         let source_rect = Rectangle.create f 0. (if player.facing_right then (t) else -. (t)) (50.) in
-        let dest_rect = Rectangle.create (if get_frame player>30 && (not player.facing_right) then fst player.pos -. 35. else fst player.pos) (float_of_int(resolution_Y) -. (snd player.pos)) ((if get_frame player>30 then (player.width)*.2. else player.width)) (player.height) in 
+        let dest_rect = Rectangle.create (if get_frame player>30 && (not player.facing_right) then fst player.pos -. player.width else fst player.pos) (float_of_int(resolution_Y) -. (snd player.pos)) ((if get_frame player>30 then (player.width)*.2. else player.width)) (player.height) in 
         let origin = Vector2.create 0. 0. in
         draw_texture_pro sprite_texture source_rect dest_rect origin 0. Color.white;  
 

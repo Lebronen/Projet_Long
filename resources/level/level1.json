@@ -32,5 +32,11 @@
       }
     ],
     "ennemis": [
+      {
+        "sprite": "../resources/knight.png",
+        "xmin": 500.0,
+        "xmax": 500.0,
+        "y": 150.0
+      }
     ]
   }
