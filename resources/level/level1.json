@@ -1,20 +1,14 @@
 {
     "platforms": [
       {
-        "x": 200,
-        "y": 500,
-        "width": 300,
-        "height": 30
-      },
-      {
-        "x": 500,
-        "y": 700,
-        "width": 500,
-        "height": 30
-      },
-      {
-        "x": 800,
+        "x": 450,
         "y": 200,
+        "width": 400,
+        "height": 30
+      },
+      {
+        "x": 900,
+        "y": 400,
         "width": 400,
         "height": 30
       },
@@ -32,18 +26,5 @@
       }
     ],
     "ennemis": [
-      {
-        "sprite": "../resources/blue.png",
-        "xmin": 1100.0,
-        "xmax": 1300.0,
-        "y": 100.0
-      },
-
-      {
-        "sprite": "../resources/red.png",
-        "xmin": 800.0,
-        "xmax": 1100.0,
-        "y": 300.0
-      }
     ]
   }

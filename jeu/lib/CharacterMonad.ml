@@ -17,13 +17,14 @@ let get = fun j -> (j, j)
         | 0 ->
             Joueur {
               grap = { pos = (0., 0.); using = false };
-              jetpack_carburant_pourcentage = 150;
+              jetpack_carburant_pourcentage = 100;
               health_point = 100;
               frame = 0;
             }
         | 1 ->
             Ennemi {
               health_point = 100;
+              frame = 0;
             }
         | _ -> failwith "Type de rôle inconnu"
       in
@@ -66,8 +67,8 @@ let set_health (hp : int) : unit t = fun c ->
   | Joueur j ->
       let new_joueur = { j with health_point = hp } in
       ((), { c with role = Joueur new_joueur })
-  | Ennemi _ ->
-      let new_ennemi = { health_point = hp } in
+  | Ennemi e ->
+      let new_ennemi = { e with health_point = hp } in
       ((), { c with role = Ennemi new_ennemi })
 
 
@@ -80,7 +81,7 @@ let add_health (delta : int) : unit t = fun c ->
       ((), { c with role = Joueur new_joueur })
   | Ennemi e ->
       let new_hp = e.health_point + delta in
-      let new_ennemi = { health_point = new_hp } in
+      let new_ennemi = {e with health_point = new_hp } in
       ((), { c with role = Ennemi new_ennemi })
 
 (** Définit le carburant du jetpack *)
@@ -127,10 +128,16 @@ let add_carburant (delta : int) : unit t = fun c ->
 let add_frame : unit t = fun c ->
   match c.role with
   | Joueur j ->
-      let new_joueur = { j with frame = (if (j.frame==30) then 0 else (j.frame+1)) } in
+      let new_joueur = { j with frame = (if (j.frame==29 || j.frame==49) then 0 else (j.frame+1)) } in
       ((), { c with role = Joueur new_joueur })
   | _ -> ((), c)
- 
+
+let set_frame (f : int) : unit t = fun c ->
+  match c.role with
+  | Joueur j ->
+      let new_joueur = { j with frame = f } in
+      ((), { c with role = Joueur new_joueur })
+  | _ -> ((), c)
 
   let patrol (x_min : float) (x_max : float) (speed : float) : unit t = fun c ->
     match c.role with

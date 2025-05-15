@@ -14,6 +14,7 @@ type joueur = {
 
 type ennemi = {
   health_point : int;
+  frame : int;
 }
 
 type role =
