@@ -22,7 +22,7 @@ type entities = {
   plateforme_list : plateforme list;
 }
 
-
+(* parsing du fichier json des niveaux *)
 let parse_json file = 
   let json = Basic.from_file file in
   match json with
@@ -74,8 +74,8 @@ let resolution_Y = 900
     let vy' = py -. y in
     (vx', vy')       
 
-     type direction = Below | Left | Right
-
+    (* verification des collisions avec les plateformes *)
+    type direction = Below | Left | Right
     let check_plateforme direction pos vector_velocity height width plateform =
       match direction with
       | Below ->
@@ -104,11 +104,15 @@ let setup () =
   Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
   Raylib.set_target_fps 60;
 
+  (* loading des textures *)
   let menu_texture = Raylib.load_texture "../resources/bg_menu.png" in
   let bg_texture = Raylib.load_texture "../resources/PNG/background 1/Preview 1.png" in
   let player = create_character 0 "../resources/sp.png" 0. 100. 100. 70. in
-
   let parsed_list = parse_json "../resources/level/level1.json" in
+  let vie_texture = Raylib.load_texture "../resources/vie.png" in
+  let carburant_texture = Raylib.load_texture "../resources/lightning.png" in
+  let porte_texture = Raylib.load_texture "../resources/porte.png" in
+  let sprite_texture = Raylib.load_texture player.sprite in
 
   let pennemis = List.init (List.length (snd parsed_list)) (fun i ->
     let l = List.nth (snd parsed_list) i in
@@ -120,10 +124,6 @@ let setup () =
     | _ -> failwith "wrong json format"
     )
   in
-  let vie_texture = Raylib.load_texture "../resources/vie.png" in
-  let carburant_texture = Raylib.load_texture "../resources/lightning.png" in
-  let porte_texture = Raylib.load_texture "../resources/porte.png" in
-  let sprite_texture = Raylib.load_texture player.sprite in
   
   let enemy_textures = List.init (List.length pennemis) (fun i -> let (e, _, _) = List.nth pennemis i in
     Raylib.load_texture e.sprite) in
@@ -322,6 +322,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
 
 
           let collide (x1, y1, w1, h1) (x2, y2, w2, h2) = not (x1 +. w1 < x2 || x2 +. w2 < x1 || y1 -. h1 > y2 || y2 -. h2 > y1) in
+          (* perte de point de vie du joueur au contacte d'un ennemi *)
             let update_player_on_enemy_collision (player : character) (enemies : (character * float * float) list) : character =
             let player_box = 
               let x, y = joueur.pos in
@@ -348,7 +349,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
           let joueur = update_player_on_enemy_collision joueur entities.ennemis
           in
 
-
+          (* perte de point de vie des ennemis par l'attaque du joueur *)
           let update_ennemis_on_collision (ennemis : (character * float * float) list) (joueur : character) : (character * float * float) list =
             let jx, jy = joueur.pos in
             let jw, jh = joueur.width, joueur.height in
@@ -375,12 +376,10 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
                   (ennemi, fx, fy)
               ) ennemis
             else
-              (* Si frame <= 30, pas de dégâts, on renvoie la liste inchangée *)
               ennemis
               in
-          
           let ennemis = update_ennemis_on_collision entities.ennemis joueur in
-          
+        
           let ennemis = (List.map (fun (e, xmin, xmax) -> let (_, enemy) = patrol xmin xmax 2. e  in (enemy,xmin, xmax)) ennemis) in
 
         {player = joueur; ennemis = ennemis; plateforme_list = entities.plateforme_list}
@@ -388,6 +387,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
       
       else entities in 
 
+        (* suppression des ennemis mort *)
         let filtrer_characters (chars : (Character.character * float * float) list) (bs : 'b list) =
           let rec aux chars bs acc_chars acc_bs = match chars, bs with
             | [], [] -> List.rev acc_chars, List.rev acc_bs
@@ -483,6 +483,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
     in
     draw_game entities;
     
+    (* passage au niveau suivant *)
     if (
       1510. >= (fst entities.player.pos) && 1510. <= (fst entities.player.pos +. entities.player.width) &&
       25. >= (snd entities.player.pos-. entities.player.height) && 25. <= (snd entities.player.pos)
@@ -525,12 +526,12 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         |3 -> Raylib.load_texture "../resources/PNG/background 2/Preview 2.png"
         |4 -> Raylib.load_texture "../resources/PNG/background 4/Preview 4.png"
         |_ -> Raylib.load_texture "../resources/PNG/background 2/Preview 2.png"
-        
         in
          let j =
         let* () = set_pos (0., 100.) in  set_health 100 in
         let (_,joueur) = j entities.player in
       loop menu_texture bg_texture sprite_texture enemy_textures {player = joueur; ennemis = pennemis; plateforme_list = p_list} carburant_texture vie_texture porte_texture level
+    
     else
     loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level
 
