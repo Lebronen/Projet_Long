@@ -102,8 +102,8 @@ let resolution_Y = 900
       List.filter (check_plateforme direction c.pos c.vector_velocity c.height c.width) p_list
 
 let setup () =
-  Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
-  Raylib.set_target_fps 60;
+  (* Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
+  Raylib.set_target_fps 60; *)
 
   (* loading des textures *)
   let menu_texture = Raylib.load_texture "../resources/bg_menu.png" in
@@ -140,11 +140,17 @@ let setup () =
   let entities = { player; ennemis = pennemis; plateforme_list = p_list } in
   (menu_texture, bg_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture, porte_texture)
 
+
 let start_time = ref (Raylib.get_time ())
 let is_start_visible = ref true
 let is_game_running = ref false
 
 let is_game_over = ref false
+
+let reset_game () =
+  let (_, _, sprite_texture, enemy_textures, entities, _, _, _) = setup () in
+  (sprite_texture, enemy_textures, entities)
+
 
 let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level=
   if Raylib.window_should_close () then (
@@ -153,6 +159,10 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
     Raylib.unload_texture sprite_texture;
     Raylib.unload_texture carburant_texture;
     Raylib.unload_texture vie_texture;
+    let rec unload_ennemis el = match el with
+      |[] -> ()
+      |e::es -> ((Raylib.unload_texture e);(unload_ennemis es))
+    in unload_ennemis enemy_textures;
     Raylib.close_window ()
   )
   else
@@ -418,6 +428,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         let entities = {player = entities.player; ennemis = e; plateforme_list = entities.plateforme_list}
         in
 
+
     let draw_game entities = 
       begin_drawing (); 
       clear_background Color.white;
@@ -427,6 +438,26 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         clear_background Color.black;
         draw_text "GAME OVER" (resolution_X / 2 - 200) (resolution_Y / 2 - 50) 60 Color.red;
         draw_text "Appuyez sur Echap pour quitter" (resolution_X / 2 - 250) (resolution_Y / 2 + 30) 30 Color.white;
+        draw_text "Appuyez sur R pour relancer" (resolution_X / 2 - 200) (resolution_Y / 2 + 80) 30 Color.white;
+        draw_text "Appuyez sur M pour revenir au menu" (resolution_X / 2 - 250) (resolution_Y / 2 + 120) 30 Color.white;
+        if is_key_pressed Key.R then begin
+          let (sprite_texture', enemy_textures', entities') = reset_game () in
+          is_game_over := false;
+          is_game_running := true;
+          loop menu_texture bg_texture sprite_texture' enemy_textures' entities' carburant_texture vie_texture porte_texture level
+        end;
+        
+      
+        if is_key_pressed Key.M then begin
+          let (sprite_texture', enemy_textures', entities') = reset_game () in
+          is_game_over := false;
+          is_game_running := false;
+          start_time := get_time ();
+          loop menu_texture bg_texture sprite_texture' enemy_textures' entities' carburant_texture vie_texture porte_texture level
+        end;
+        
+      
+      
         end_drawing ();
       end
     else 
@@ -553,5 +584,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
     loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level
 
 let gameloop () =
+  Raylib.init_window resolution_X resolution_Y "L'ATTAQUE DES TITOUAN";
+  Raylib.set_target_fps 60;
   let menu_texture, bg_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture, porte_texture = setup () in
   loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture 1
