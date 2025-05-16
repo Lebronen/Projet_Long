@@ -51,6 +51,7 @@ let parse_json file =
 let resolution_X = 1600
 let resolution_Y = 900 
 
+
   let pendule x y x' y' vx vy =
   let r = sqrt((x -. x')**2. +. (y -. y')**2.) in
   (* Étape 1 : Calcul du point (ax, ay) après déplacement *)
@@ -143,6 +144,8 @@ let start_time = ref (Raylib.get_time ())
 let is_start_visible = ref true
 let is_game_running = ref false
 
+let is_game_over = ref false
+
 let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level=
   if Raylib.window_should_close () then (
     Raylib.unload_texture menu_texture;
@@ -163,7 +166,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
       if is_key_pressed Key.Enter then 
         is_game_running := true;
     end;
-     let entities = if !is_game_running then
+     let entities = if !is_game_running &&  not !is_game_over then
     ( let joueur = entities.player in
         let action =
           (* déplacement latéral *)
@@ -349,6 +352,12 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
           let joueur = update_player_on_enemy_collision joueur entities.ennemis
           in
 
+          let () = 
+          match joueur.role with 
+          |Joueur j -> if j.health_point <= 0 then is_game_over := true
+          |_ -> ()
+        in
+
           (* perte de point de vie des ennemis par l'attaque du joueur *)
           let update_ennemis_on_collision (ennemis : (character * float * float) list) (joueur : character) : (character * float * float) list =
             let jx, jy = joueur.pos in
@@ -412,7 +421,15 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
     let draw_game entities = 
       begin_drawing (); 
       clear_background Color.white;
-      
+
+      if !is_game_over then begin
+        begin_drawing ();
+        clear_background Color.black;
+        draw_text "GAME OVER" (resolution_X / 2 - 200) (resolution_Y / 2 - 50) 60 Color.red;
+        draw_text "Appuyez sur Echap pour quitter" (resolution_X / 2 - 250) (resolution_Y / 2 + 30) 30 Color.white;
+        end_drawing ();
+      end
+    else 
       if !is_game_running then begin
         (* affichage du fond*)
         let origin = Vector2.create 0. 0. in
