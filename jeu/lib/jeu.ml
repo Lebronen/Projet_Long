@@ -147,22 +147,21 @@ let is_game_running = ref false
 
 let is_game_over = ref false
 
-let reset_game () =
-  let (_, _, sprite_texture, enemy_textures, entities, _, _, _) = setup () in
-  (sprite_texture, enemy_textures, entities)
-
+let clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture =
+  Raylib.unload_texture menu_texture;
+  Raylib.unload_texture bg_texture;
+  Raylib.unload_texture sprite_texture;
+  Raylib.unload_texture carburant_texture;
+  Raylib.unload_texture vie_texture;
+  Raylib.unload_texture porte_texture;
+  let rec unload_ennemis el = match el with
+    |[] -> ()
+    |e::es -> ((Raylib.unload_texture e);(unload_ennemis es))
+  in unload_ennemis enemy_textures
 
 let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level=
   if Raylib.window_should_close () then (
-    Raylib.unload_texture menu_texture;
-    Raylib.unload_texture bg_texture;
-    Raylib.unload_texture sprite_texture;
-    Raylib.unload_texture carburant_texture;
-    Raylib.unload_texture vie_texture;
-    let rec unload_ennemis el = match el with
-      |[] -> ()
-      |e::es -> ((Raylib.unload_texture e);(unload_ennemis es))
-    in unload_ennemis enemy_textures;
+    clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
     Raylib.close_window ()
   )
   else
@@ -440,20 +439,23 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         draw_text "Appuyez sur Echap pour quitter" (resolution_X / 2 - 250) (resolution_Y / 2 + 30) 30 Color.white;
         draw_text "Appuyez sur R pour relancer" (resolution_X / 2 - 200) (resolution_Y / 2 + 80) 30 Color.white;
         draw_text "Appuyez sur M pour revenir au menu" (resolution_X / 2 - 250) (resolution_Y / 2 + 120) 30 Color.white;
+
+        
         if is_key_pressed Key.R then begin
-          let (sprite_texture', enemy_textures', entities') = reset_game () in
+          clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
           is_game_over := false;
           is_game_running := true;
-          loop menu_texture bg_texture sprite_texture' enemy_textures' entities' carburant_texture vie_texture porte_texture level
+          let menu_texture, bg_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture, porte_texture = setup () in
+          loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture 1
         end;
         
       
         if is_key_pressed Key.M then begin
-          let (sprite_texture', enemy_textures', entities') = reset_game () in
+          clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
           is_game_over := false;
           is_game_running := false;
-          start_time := get_time ();
-          loop menu_texture bg_texture sprite_texture' enemy_textures' entities' carburant_texture vie_texture porte_texture level
+          let menu_texture, bg_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture, porte_texture = setup () in
+          loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture 1
         end;
         
       
