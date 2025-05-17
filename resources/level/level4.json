@@ -1,19 +1,13 @@
 {
     "platforms": [
       {
-        "x": 200,
-        "y": 450,
-        "width": 300,
-        "height": 30
-      },
-      {
         "x": 500,
-        "y": 650,
-        "width": 500,
+        "y": 400,
+        "width": 600,
         "height": 30
       },
       {
-        "x": 800,
+        "x": 0,
         "y": 200,
         "width": 400,
         "height": 30
@@ -41,9 +35,16 @@
 
       {
         "sprite": "../resources/knight.png",
-        "xmin": 800.0,
-        "xmax": 1100.0,
-        "y": 350.0
+        "xmin": 600.0,
+        "xmax": 1000.0,
+        "y": 550.0
+      },
+      
+      {
+        "sprite": "../resources/knight.png",
+        "xmin": 500.0,
+        "xmax": 850.0,
+        "y": 150.0
       }
     ]
   }
