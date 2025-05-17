@@ -28,7 +28,8 @@ let parse_json file =
   match json with
   |`Assoc l -> if not  (List.length l = 2) then failwith "wrong level format" else (
     let p_list =
-    (let (_, pl) = List.hd l in match pl with
+    (let (_, pl) = List.hd l 
+      in match pl with
     |`List plist -> List.map (fun p -> 
       match p with
       |`Assoc jp -> List.map (fun champ -> snd champ) jp
@@ -147,22 +148,28 @@ let is_game_running = ref false
 
 let is_game_over = ref false
 
+let safe_unload texture =
+  if Raylib.is_texture_ready texture then
+    Raylib.unload_texture texture
+
+
 let clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture =
-  Raylib.unload_texture menu_texture;
-  Raylib.unload_texture bg_texture;
-  Raylib.unload_texture sprite_texture;
-  Raylib.unload_texture carburant_texture;
-  Raylib.unload_texture vie_texture;
-  Raylib.unload_texture porte_texture;
+  safe_unload menu_texture;
+  safe_unload bg_texture;
+  safe_unload sprite_texture;
+  safe_unload carburant_texture;
+  safe_unload vie_texture;
+  safe_unload porte_texture;
   let rec unload_ennemis el = match el with
-    |[] -> ()
-    |e::es -> ((Raylib.unload_texture e);(unload_ennemis es))
+  |[] -> ()
+  |e::es -> (safe_unload e; unload_ennemis es)
+
   in unload_ennemis enemy_textures
 
 let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level=
   if Raylib.window_should_close () then (
-    clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
-    Raylib.close_window ()
+    (* clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture; *)
+    (* Raylib.close_window () *)
   )
   else
     let open Raylib in
@@ -415,7 +422,8 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
                   | Ennemi e -> e.health_point
                 in
                 if hp < 0 then
-                  aux cs bs_tail acc_chars acc_bs
+                  (safe_unload b;
+                  (aux cs bs_tail acc_chars acc_bs))
                 else
                   aux cs bs_tail ((c, f1, f2)::acc_chars) (b::acc_bs)
             | _ -> failwith "Les deux listes doivent avoir la même longueur"
@@ -438,24 +446,14 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         draw_text "GAME OVER" (resolution_X / 2 - 200) (resolution_Y / 2 - 50) 60 Color.red;
         draw_text "Appuyez sur Echap pour quitter" (resolution_X / 2 - 250) (resolution_Y / 2 + 30) 30 Color.white;
         draw_text "Appuyez sur R pour relancer" (resolution_X / 2 - 200) (resolution_Y / 2 + 80) 30 Color.white;
-        draw_text "Appuyez sur M pour revenir au menu" (resolution_X / 2 - 250) (resolution_Y / 2 + 120) 30 Color.white;
 
-        
+
         if is_key_pressed Key.R then begin
           clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
           is_game_over := false;
           is_game_running := true;
-          let menu_texture, bg_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture, porte_texture = setup () in
-          loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture 1
-        end;
-        
-      
-        if is_key_pressed Key.M then begin
-          clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
-          is_game_over := false;
-          is_game_running := false;
-          let menu_texture, bg_texture, sprite_texture, enemy_textures, entities, carburant_texture, vie_texture, porte_texture = setup () in
-          loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture 1
+          let new_menu_texture, new_bg_texture, new_sprite_texture, new_enemy_textures, new_entities, new_carburant_texture, new_vie_texture, new_porte_texture = setup () in
+          loop new_menu_texture new_bg_texture new_sprite_texture new_enemy_textures new_entities new_carburant_texture new_vie_texture new_porte_texture 1
         end;
         
       
@@ -569,6 +567,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         | _ -> failwith "wrong json format")
         | _ -> failwith "wrong json format"
         ) in
+        safe_unload bg_texture;
         let bg_texture = 
         match level with
         |1 -> Raylib.load_texture "../resources/PNG/background 1/Preview 1.png"
