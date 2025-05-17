@@ -1,5 +1,23 @@
 # cotrez-shay-plong-2024
 
+Au préalable il faut avoir les librairies raylib et yojson installé.
+
+Le programme se compile en executant
+```
+cd jeu
+dune build
+```
+
+Une fois compilé il suffit d'executer 
+```
+dune exec jeu
+```
+ pour lancer le jeu.
+
+Pour se déplacer avec le personnages il faut appuyer sur les touches directonnelles gauche et droite.
+La touche directionnelle du haut permet au personnages de sauter.
+En maintenant la touche espace déclenche le grappin du personnage le faisant se balancer de gauche à droite à la manière d'un pendule
+
 1)
 Ce projet répond au problème de créer un jeu vidéo graphique complexe en langage fonctionnel (ocaml en l'ocurrence)
 
