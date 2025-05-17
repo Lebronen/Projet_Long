@@ -1,22 +1,22 @@
 {
     "platforms": [
       {
-        "x": 450,
+        "x": 200,
+        "y": 450,
+        "width": 300,
+        "height": 30
+      },
+      {
+        "x": 500,
+        "y": 650,
+        "width": 500,
+        "height": 30
+      },
+      {
+        "x": 700,
         "y": 200,
-        "width": 400,
+        "width": 500,
         "height": 30
-      },
-      {
-        "x": 800,
-        "y": 400,
-        "width": 400,
-        "height": 30
-      },
-      {
-        "x": 1200,
-        "y": 400,
-        "width": 30,
-        "height": 400
       },
       {
         "x": 1600,
@@ -34,9 +34,16 @@
     "ennemis": [
       {
         "sprite": "../resources/knight.png",
-        "xmin": 500.0,
-        "xmax": 500.0,
+        "xmin": 1100.0,
+        "xmax": 1300.0,
         "y": 150.0
+      },
+
+      {
+        "sprite": "../resources/knight.png",
+        "xmin": 900.0,
+        "xmax": 1100.0,
+        "y": 350.0
       }
     ]
   }

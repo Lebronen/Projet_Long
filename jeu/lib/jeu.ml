@@ -438,8 +438,6 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         draw_text "GAME OVER" (resolution_X / 2 - 200) (resolution_Y / 2 - 50) 60 Color.red;
         draw_text "Appuyez sur Echap pour quitter" (resolution_X / 2 - 250) (resolution_Y / 2 + 30) 30 Color.white;
         draw_text "Appuyez sur R pour relancer" (resolution_X / 2 - 200) (resolution_Y / 2 + 80) 30 Color.white;
-        draw_text "Appuyez sur M pour revenir au menu" (resolution_X / 2 - 250) (resolution_Y / 2 + 120) 30 Color.white;
-
         
         if is_key_pressed Key.R then begin
           clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
@@ -518,7 +516,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         draw_texture_pro t source_rect enemy_dest_rect origin 0. Color.white) entities.ennemis enemy_textures ;
         
         (* affichage plateforme *)
-        List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.darkbrown) entities.plateforme_list;
+        List.iter (fun p -> draw_rectangle p.platform_x (resolution_Y - p.platform_y) p.platform_width p.platform_height Color.black) entities.plateforme_list;
       end else begin
         (* affichage du fond menu *)
         let origin = Vector2.create 0. 0. in
@@ -539,13 +537,16 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
       25. >= (snd entities.player.pos-. entities.player.height) && 25. <= (snd entities.player.pos)
       )
     then
-    let level = if level=4 then 1 else level+1 in
+    let level = if level=7 then 1 else level+1 in
     let levelf =
       match level with
       |1 -> "../resources/level/level1.json"
       |2 -> "../resources/level/level2.json"
       |3 -> "../resources/level/level3.json"
       |4 -> "../resources/level/level4.json"
+      |5 -> "../resources/level/level5.json"
+      |6 -> "../resources/level/level6.json"
+      |7 -> "../resources/level/level7.json"
       |_ -> "../resources/level/level1.json"
     in
     let parsed_list = parse_json levelf in 
@@ -571,10 +572,10 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
         ) in
         let bg_texture = 
         match level with
-        |1 -> Raylib.load_texture "../resources/PNG/background 1/Preview 1.png"
-        |2 -> Raylib.load_texture "../resources/PNG/background 3/Preview 3.png"
-        |3 -> Raylib.load_texture "../resources/PNG/background 2/Preview 2.png"
-        |4 -> Raylib.load_texture "../resources/PNG/background 4/Preview 4.png"
+        |level when level mod 4 = 0 -> Raylib.load_texture "../resources/PNG/background 2/Preview 2.png"
+        |level when level mod 4 = 1 -> Raylib.load_texture "../resources/PNG/background 1/Preview 1.png"
+        |level when level mod 4 = 2 -> Raylib.load_texture "../resources/PNG/background 3/Preview 3.png"
+        |level when level mod 4 = 3 -> Raylib.load_texture "../resources/PNG/background 4/Preview 4.png"
         |_ -> Raylib.load_texture "../resources/PNG/background 2/Preview 2.png"
         in
          let j =
