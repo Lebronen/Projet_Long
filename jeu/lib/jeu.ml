@@ -148,6 +148,8 @@ let is_game_running = ref false
 
 let is_game_over = ref false
 
+let was_realoaded = ref false
+
 let safe_unload texture =
   if Raylib.is_texture_ready texture then
     Raylib.unload_texture texture
@@ -168,8 +170,10 @@ let clear_textures menu_texture bg_texture sprite_texture enemy_textures carbura
 
 let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carburant_texture vie_texture porte_texture level=
   if Raylib.window_should_close () then (
-    (* clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture; *)
-    (* Raylib.close_window () *)
+    clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
+  if !was_realoaded then
+    Raylib.close_window ();
+    exit 0;
   )
   else
     let open Raylib in
@@ -451,6 +455,7 @@ let rec loop menu_texture bg_texture sprite_texture enemy_textures entities carb
           clear_textures menu_texture bg_texture sprite_texture enemy_textures carburant_texture vie_texture porte_texture;
           is_game_over := false;
           is_game_running := true;
+          was_realoaded := true;
           let new_menu_texture, new_bg_texture, new_sprite_texture, new_enemy_textures, new_entities, new_carburant_texture, new_vie_texture, new_porte_texture = setup () in
           loop new_menu_texture new_bg_texture new_sprite_texture new_enemy_textures new_entities new_carburant_texture new_vie_texture new_porte_texture 1
         end;
