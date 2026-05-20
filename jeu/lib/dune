@@ -1,4 +1,4 @@
 (library
  (name jeu)
- (modules joueur ennemi jeu)
+ (modules character CharacterMonad jeu)
  (libraries raylib yojson))

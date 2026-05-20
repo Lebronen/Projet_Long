@@ -1,0 +1,42 @@
+{
+    "platforms": [
+      {
+        "x": 450,
+        "y": 200,
+        "width": 400,
+        "height": 30
+      },
+      {
+        "x": 800,
+        "y": 400,
+        "width": 400,
+        "height": 30
+      },
+      {
+        "x": 1200,
+        "y": 400,
+        "width": 30,
+        "height": 400
+      },
+      {
+        "x": 1600,
+        "y": 2000,
+        "width": 0,
+        "height": 2000
+      },
+      {
+        "x": 0,
+        "y": 2000,
+        "width": 0,
+        "height": 2000
+      }
+    ],
+    "ennemis": [
+      {
+        "sprite": "../resources/knight.png",
+        "xmin": 500.0,
+        "xmax": 500.0,
+        "y": 150.0
+      }
+    ]
+  }
